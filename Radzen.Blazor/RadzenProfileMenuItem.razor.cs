@@ -14,6 +14,12 @@ namespace Radzen.Blazor
             return "rz-navigation-item";
         }
 
+        [Parameter]
+        public string IconStyle { get; set; }
+        
+        [Parameter]
+        public string MenuItemStyle { get; set; }
+        
         /// <summary>
         /// Gets or sets the target.
         /// </summary>

@@ -24,6 +24,8 @@ namespace Radzen.Blazor
             return "rz-menu rz-profile-menu";
         }
 
+        [Parameter] public string DropDownIconClass { get; set; }
+        
         /// <summary>
         /// Gets or sets the template.
         /// </summary>
