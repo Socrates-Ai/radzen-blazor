@@ -2,9 +2,9 @@
 @using Microsoft.AspNetCore.Components.Forms
  <CascadingValue Value=@EditContext>
     <CascadingValue Value=Row>
-@if (RowIndex == Column.GetLevel())
+@if (Grid.AllowCompositeDataCells ? RowIndex == Column.GetLevel() : (Column.Parent != null && RowIndex == Column.GetLevel() ||  Column.Columns == null))
 {
-<td rowspan="@(Column.GetRowSpan())" colspan="@(Column.GetColSpan())" @attributes="@Attributes" style="@GetStyle()" class="@GetCssClass()" @onclick="@OnClick" @ondblclick="@OnDblClick" @oncontextmenu="@OnContextMenu" @oncontextmenu:preventDefault="@Grid.CellContextMenu.HasDelegate">
+<td rowspan="@(Column.GetRowSpan(true))" colspan="@(Column.GetColSpan(true))" @attributes="@Attributes" style="@GetStyle()" class="@GetCssClass()" @onclick="@OnClick" @ondblclick="@OnDblClick" @oncontextmenu="@OnContextMenu" @oncontextmenu:preventDefault="@Grid.CellContextMenu.HasDelegate">
     <CascadingValue Value=this>
         @ChildContent
     </CascadingValue>
@@ -15,7 +15,7 @@ else
     @foreach(var column in Grid.childColumns.Where(c => c.Visible && c.Parent == Column))
     {
         <RadzenDataGridCell Row=@Row EditContext=EditContext RowIndex="@RowIndex" Grid="@Grid" Column="@column" Item="@Item"
-            Style="@column.GetStyle(true)" CssClass="@(column.CssClass + " " + Grid.getFrozenColumnClass(column, Grid.ColumnsCollection))" Attributes="@(Grid.CellAttributes(Item, column))">
+            Style="@column.GetStyle(true)" CssClass="@(column.CssClass + " " + Grid.getFrozenColumnClass(column, Grid.ColumnsCollection) + " " + (column.Columns != null || column.Parent != null ? "rz-composite-cell" : ""))" Attributes="@(Grid.CellAttributes(Item, column))">
                 @if (Grid.Responsive)
                 {
                     <span class="rz-column-title">

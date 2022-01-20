@@ -194,6 +194,13 @@ namespace Radzen.Blazor
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether DataGrid data cells will follow the header cells structure in composite columns.
+        /// </summary>
+        /// <value><c>true</c> if DataGrid data cells will follow the header cells structure in composite columns; otherwise, <c>false</c>.</value>
+        [Parameter]
+        public bool AllowCompositeDataCells { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets a value indicating whether DataGrid is responsive.
         /// </summary>
         /// <value><c>true</c> if DataGrid is Responsive; otherwise, <c>false</c>.</value>
@@ -812,13 +819,6 @@ namespace Radzen.Blazor
         /// <value><c>true</c> if group footers are visible when the group is collapsed otherwise, <c>false</c>.</value>
         [Parameter]
         public bool GroupFootersAlwaysVisible { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether pager is visible even when not enough data for paging.
-        /// </summary>
-        /// <value><c>true</c> if pager is visible even when not enough data for paging otherwise, <c>false</c>.</value>
-        [Parameter]
-        public bool PagerAlwaysVisible { get; set; }
 
         /// <summary>
         /// Gets or sets the group header template.

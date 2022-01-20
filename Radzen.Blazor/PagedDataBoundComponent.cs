@@ -22,6 +22,20 @@ namespace Radzen
         public PagerPosition PagerPosition { get; set; } = PagerPosition.Bottom;
 
         /// <summary>
+        /// Gets or sets a value indicating whether pager is visible even when not enough data for paging.
+        /// </summary>
+        /// <value><c>true</c> if pager is visible even when not enough data for paging otherwise, <c>false</c>.</value>
+        [Parameter]
+        public bool PagerAlwaysVisible { get; set; }
+
+        /// <summary>
+        /// Gets or sets the horizontal align.
+        /// </summary>
+        /// <value>The horizontal align.</value>
+        [Parameter]
+        public HorizontalAlign PagerHorizontalAlign { get; set; } = HorizontalAlign.Justify;
+
+        /// <summary>
         /// Gets or sets a value indicating whether paging is allowed. Set to <c>false</c> by default.
         /// </summary>
         /// <value><c>true</c> if paging is allowed; otherwise, <c>false</c>.</value>
@@ -105,6 +119,13 @@ namespace Radzen
         /// <value>The page size options.</value>
         [Parameter]
         public IEnumerable<int> PageSizeOptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page size description text.
+        /// </summary>
+        /// <value>The page size description text.</value>
+        [Parameter]
+        public string PageSizeText { get; set; } = "items per page";
         
         /// <summary>
         /// Gets or sets the pager summary visibility.
