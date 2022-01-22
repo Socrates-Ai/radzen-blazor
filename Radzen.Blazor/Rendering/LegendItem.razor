@@ -3,13 +3,14 @@
 <li class="rz-legend-item" style="@Style" @onclick="@Click">
     <svg width="@((MarkerSize * 2).ToInvariantString())" height="@((MarkerSize * 2).ToInvariantString())">
         <g class="rz-series-@Index @Class">
-            <Marker X="@MarkerSize" Y="@MarkerSize" Type="@(MarkerType == MarkerType.None ? MarkerType.Square : MarkerType)" Fill="@Color" Size="@MarkerSize" />
+            <Marker X="@MarkerSize" Y="@MarkerSize" Type="@(MarkerType == MarkerType.None ? MarkerType.Square : MarkerType)" Fill="@Color" Size="@MarkerSize"/>
         </g>
     </svg>
     <span class="rz-legend-item-text">@Text</span>
 </li>
 
 @code {
+
     [Parameter]
     public string Color { get; set; }
 
@@ -17,7 +18,7 @@
     public string Text { get; set; }
 
     [Parameter]
-    public string Class { get; set;}
+    public string Class { get; set; }
 
     [Parameter]
     public string Style { get; set; }
@@ -33,4 +34,5 @@
 
     [Parameter]
     public int Index { get; set; }
+
 }
