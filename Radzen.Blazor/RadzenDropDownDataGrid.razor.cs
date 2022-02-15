@@ -22,6 +22,13 @@ namespace Radzen.Blazor
     public partial class RadzenDropDownDataGrid<TValue> : DropDownBase<TValue>
     {
         /// <summary>
+        /// Gets or sets the empty template shown when Data is empty collection.
+        /// </summary>
+        /// <value>The empty template.</value>
+        [Parameter]
+        public RenderFragment EmptyTemplate { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether pager is visible even when not enough data for paging.
         /// </summary>
         /// <value><c>true</c> if pager is visible even when not enough data for paging otherwise, <c>false</c>.</value>
@@ -304,7 +311,7 @@ namespace Radzen.Blazor
                     }
                     else
                     {
-                        selectedItem = Value;
+                        selectedItem = internalValue;
                     }
                     SelectedItemChanged?.Invoke(selectedItem);
                 }
@@ -344,14 +351,14 @@ namespace Radzen.Blazor
                 return;
 
             searchText = null;
-            Value = default(TValue);
+            internalValue = default(TValue);
             selectedItem = null;
 
             selectedItems.Clear();
 
-            await ValueChanged.InvokeAsync((TValue)Value);
+            await ValueChanged.InvokeAsync((TValue)internalValue);
             if (FieldIdentifier.FieldName != null) { EditContext?.NotifyFieldChanged(FieldIdentifier); }
-            await Change.InvokeAsync(Value);
+            await Change.InvokeAsync(internalValue);
 
             await grid.Reload();
 
@@ -486,11 +493,11 @@ namespace Radzen.Blazor
 
         async Task OnRowSelect(object item)
         {
-            await SelectItem(item);
             if (!Disabled && !Multiple)
             {
                 await JSRuntime.InvokeVoidAsync("Radzen.closePopup", PopupID);
             }
+            await SelectItem(item);
         }
 
         /// <inheritdoc />

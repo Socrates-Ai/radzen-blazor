@@ -13,7 +13,7 @@
          style="@Style" tabindex="@TabIndex" id="@GetId()">
         <div class="rz-helper-hidden-accessible">
             <input disabled="@Disabled" style="width:100%" aria-haspopup="listbox" readonly="" type="text"
-                   name="@Name" aria-label="@(!Multiple && Value != null ? PropertyAccess.GetItemOrValueFromProperty(Value, TextProperty) : "")" />
+                   name="@Name" aria-label="@(!Multiple && internalValue != null ? PropertyAccess.GetItemOrValueFromProperty(internalValue, TextProperty) : "")" />
 
         </div>
 
@@ -23,7 +23,7 @@
                 @Template(selectedItem)
             </label>
         }
-        else if (selectedItem != null)
+        else if (selectedItem != null && !Multiple)
         {
             <label class="rz-dropdown-label rz-inputtext " onclick="@OpenPopupScript()" style="width:100%;">
                 @PropertyAccess.GetItemOrValueFromProperty(selectedItem, TextProperty)
@@ -102,6 +102,9 @@
                                 </Template>
                             </RadzenDataGridColumn>
                         </Columns>
+                        <EmptyTemplate>
+                            @EmptyTemplate
+                        </EmptyTemplate>
                     </RadzenDataGrid>
                 }
                 else
@@ -120,6 +123,9 @@
                                     <RadzenDataGridColumn TItem="object" Property="@TextProperty" Title="@TextProperty" Type="typeof(string)" />
                                 }
                             </Columns>
+                            <EmptyTemplate>
+                                @EmptyTemplate
+                            </EmptyTemplate>
                         </RadzenDataGrid>
                     }
                     else
@@ -133,6 +139,9 @@
                                     </Template>
                                 </RadzenDataGridColumn>
                             </Columns>
+                            <EmptyTemplate>
+                                @EmptyTemplate
+                            </EmptyTemplate>
                         </RadzenDataGrid>
                     }
                 }
