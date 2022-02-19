@@ -287,6 +287,9 @@ namespace Radzen.Blazor
 
         IEnumerable<object> GetAllChildValues(Func<object, bool> predicate = null)
         {
+            var test = Value;
+            var test1 = items;
+            var test2 = items.SelectManyRecursive(i => i.items);
             var children = items.Concat(items.SelectManyRecursive(i => i.items)).Select(i => i.Value);
 
             return predicate != null ? children.Where(predicate) : children;
