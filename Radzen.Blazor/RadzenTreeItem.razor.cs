@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Radzen.Blazor
@@ -15,12 +14,10 @@ namespace Radzen.Blazor
     public partial class RadzenTreeItem : IDisposable
     {
         ClassList ContentClassList => ClassList.Create("rz-treenode-content")
-            .Add("rz-treenode-content-selected", selected);
-
+                                               .Add("rz-treenode-content-selected", selected);
         ClassList IconClassList => ClassList.Create("rz-tree-toggler rzi")
-            .Add("rzi-caret-down", expanded)
-            .Add("rzi-caret-right", !expanded);
-
+                                               .Add("rzi-caret-down", expanded)
+                                               .Add("rzi-caret-right", !expanded);
         /// <summary>
         /// Gets or sets the child content.
         /// </summary>
@@ -279,118 +276,45 @@ namespace Radzen.Blazor
             {
                 return null;
             }
-            
-            bool inCheckedVals = checkedValues.Contains(Value);
-            if (inCheckedVals)
+
+            if (Tree._lowestLevelChildrenMapping is null)
             {
-                return true;
+                Tree._lowestLevelChildrenMapping = Tree.CreateDictionary();
             }
-            
-            if (HasChildren && EvaluateAllLayersForNullCheck())
+
+            if (HasChildren && EvaluateBottomLayer())
             {
                 return null;
             }
-
-            return false;
+            
+            return checkedValues.Contains(Value);
         }
         
-        private bool EvaluateAllLayersForNullCheck()
+        private bool EvaluateBottomLayer()
         {
-            // Get lowest set of children
-            if (!string.IsNullOrEmpty(Tree.ChildrenPropertiesChain))
+            IEnumerable bottomLayer = Tree._lowestLevelChildrenMapping[Value];
+            IEnumerable<object> checkedValues = GetCheckedValues();
+
+            int isChecked = 0;
+            int isNotChecked = 0;
+            foreach (object data in bottomLayer)
             {
-                var treeData = Tree.Data;
-                var propNames = Tree.ChildrenPropertyNames;
-
-                // Figure out where I am
-                string valueJson = JsonSerializer.Serialize(Value);
-                var matchingValue = GetMatchingValueInTreeData(propNames, treeData, 0, valueJson);
-
-                if (matchingValue != null)
+                if (checkedValues.Contains(data))
                 {
-                    int i = matchingValue.Value.Item2;
-                    object treeValObject = matchingValue.Value.Item1;
-
-                    // Get the lowest set of children
-                    IEnumerable lowestLevelChildren = GetLowestLevelChildren(propNames, treeValObject, i);
-                    
-                    int isChecked = 0;
-                    int isNotChecked = 0;
-                    foreach (var lowestChild in lowestLevelChildren)
-                    {
-                        string lowestChildValueJson = JsonSerializer.Serialize(lowestChild);
-                        int isCheckedCheck = isChecked;
-                        foreach (var treeCheckedValue in Tree.CheckedValues)
-                        {
-                            string treeCheckedValueJson = JsonSerializer.Serialize(treeCheckedValue);
-                            if (lowestChildValueJson == treeCheckedValueJson)
-                            {
-                                isChecked++;
-                            }
-                        }
-
-                        if (isCheckedCheck == isChecked)
-                        {
-                            isNotChecked++;
-                        }
-                    }
-
-                    if (isChecked > 0 && isNotChecked > 0)
-                    {
-                        return true;
-                    }
+                    isChecked++;
+                }
+                else
+                {
+                    isNotChecked++;
                 }
             }
+
+            if (isChecked > 0 && isNotChecked > 0)
+            {
+                return true;
+            }
+
             return false;
-        }
-
-        private IEnumerable GetLowestLevelChildren(string[] propNames, object data, int iterationCount)
-        {
-            var nextLayerData = PropertyAccess.GetValue(data, propNames[iterationCount]) as IEnumerable;
-            if (iterationCount == propNames.Length - 1)
-            {
-                foreach (var child in nextLayerData)
-                {
-                    yield return child;
-                }
-            }
-            else
-            {
-                foreach (var nextLayerSingleObject in nextLayerData)
-                {
-                    var results = GetLowestLevelChildren(propNames, nextLayerSingleObject, iterationCount + 1);
-                    foreach (var result in results)
-                    {
-                        yield return result;
-                    }
-                }
-            }
-        }
-
-        private (object, int)? GetMatchingValueInTreeData(string[] propNames, IEnumerable data, int iterationCount, string valueJson)
-        {
-            var enumerable = data as object[] ?? data.Cast<object>().ToArray();
-            foreach (var obj in enumerable)
-            {
-                var dataJson = JsonSerializer.Serialize(obj);
-                if (dataJson == valueJson)
-                {
-                    return (obj, iterationCount);
-                }
-            }
-            
-            foreach (var obj in enumerable)
-            {
-                var nextLayerData = PropertyAccess.GetValue(obj, propNames[iterationCount]) as IEnumerable;
-                var result = GetMatchingValueInTreeData(propNames, nextLayerData, iterationCount + 1, valueJson);
-
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            return null;
         }
 
         IEnumerable<object> GetCheckedValues()

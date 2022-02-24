@@ -38,7 +38,7 @@ namespace Radzen.Blazor
             return "rz-tree";
         }
 
-        internal Dictionary<object, IEnumerable> _lowestLevelChildrenMapping { get; set; } = null;
+        internal Dictionary<object, IEnumerable> _lowestLevelChildrenMapping { get; set; } 
         internal RadzenTreeItem SelectedItem { get; private set; }
 
         IList<RadzenTreeLevel> Levels { get; set; } = new List<RadzenTreeLevel>();
@@ -354,11 +354,6 @@ namespace Radzen.Blazor
                 }
             }
             
-            if (Data != null && _lowestLevelChildrenMapping == null)
-            {
-                _lowestLevelChildrenMapping = CreateDictionary();
-            }
-            
             await base.SetParametersAsync(parameters);
         }
 
@@ -371,10 +366,10 @@ namespace Radzen.Blazor
             }
         }
         
-        private IEnumerable GetLowestLevelChildren(string[] propNames, object data, int iterationCount)
+        private IEnumerable GetLowestLevelChildren(string[] propNames, object data, int layer)
         {
-            var nextLayerData = PropertyAccess.GetValue(data, propNames[iterationCount]) as IEnumerable;
-            if (iterationCount == propNames.Length - 1)
+            var nextLayerData = PropertyAccess.GetValue(data, propNames[layer]) as IEnumerable;
+            if (layer == propNames.Length - 1)
             {
                 foreach (var child in nextLayerData)
                 {
@@ -385,7 +380,7 @@ namespace Radzen.Blazor
             {
                 foreach (var nextLayerSingleObject in nextLayerData)
                 {
-                    var results = GetLowestLevelChildren(propNames, nextLayerSingleObject, iterationCount + 1);
+                    var results = GetLowestLevelChildren(propNames, nextLayerSingleObject, layer + 1);
                     foreach (var result in results)
                     {
                         yield return result;
@@ -394,21 +389,34 @@ namespace Radzen.Blazor
             }
         }
 
-        private Dictionary<object, IEnumerable> CreateDictionary(IEnumerable topLayerData)
+        internal Dictionary<object, IEnumerable> CreateDictionary()
         {
             Dictionary<object, IEnumerable> result = new Dictionary<object, IEnumerable>();
             string[] propNames = ChildrenPropertyNames;
-            IEnumerable<(object, IEnumerable)> allNodesOtherThanLowestLevel = GetAllParentNodes();
-
-            foreach (object node in allNodesOtherThanLowestLevel)
+            var pairs = GetObjectToBottomLayerItems(Data, 0, propNames);
+            foreach (var pair in pairs)
             {
-                result.Add(node, GetLowestLevelChildren(ChildrenPropertyNames, node, ));
+                result.Add(pair.Item1, pair.Item2);
             }
+
+            return result;
         }
 
-        private IEnumerable GetAllParentNodes(object data, int layer, string[] propNames)
+        private IEnumerable<(object, IEnumerable)> GetObjectToBottomLayerItems(IEnumerable layerData, int layer, string[] propNames)
         {
-            
+            foreach (object data in layerData)
+            {
+                yield return (data, GetLowestLevelChildren(propNames, data, layer));
+                if (layer <= propNames.Length - 2) // 2nd to last layer
+                {
+                    var nextLayerData = PropertyAccess.GetValue(data, propNames[layer]) as IEnumerable;
+                    var results =  GetObjectToBottomLayerItems(nextLayerData, layer + 1, propNames);
+                    foreach (var result in results)
+                    {
+                        yield return result;
+                    }
+                }
+            }
         }
     }
 }
