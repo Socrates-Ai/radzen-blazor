@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Radzen.Blazor
@@ -37,6 +38,7 @@ namespace Radzen.Blazor
             return "rz-tree";
         }
 
+        internal Dictionary<object, IEnumerable> _lowestLevelChildrenMapping { get; set; } = null;
         internal RadzenTreeItem SelectedItem { get; private set; }
 
         IList<RadzenTreeLevel> Levels { get; set; } = new List<RadzenTreeLevel>();
@@ -157,6 +159,10 @@ namespace Radzen.Blazor
         [Parameter]
         public IEnumerable<object> CheckedValues { get; set; } = Enumerable.Empty<object>();
 
+        [Parameter] public string ChildrenPropertiesChain { get; set; } = string.Empty;
+
+        internal string[] ChildrenPropertyNames => ChildrenPropertiesChain.Split('.');
+
         internal List<RadzenTreeItem> items = new List<RadzenTreeItem>();
 
         internal void AddItem(RadzenTreeItem item)
@@ -181,8 +187,8 @@ namespace Radzen.Blazor
             await CheckedValuesChanged.InvokeAsync(CheckedValues);
         }
 
-        internal IEnumerable<object> UncheckedValues { get; set; } = Enumerable.Empty<object>();
-
+        internal IEnumerable<object> UncheckedValues { get; set; }
+        
         internal void SetUncheckedValues(IEnumerable<object> values)
         {
             UncheckedValues = values.ToList();
@@ -347,7 +353,12 @@ namespace Radzen.Blazor
                     SelectedItem = null;
                 }
             }
-
+            
+            if (Data != null && _lowestLevelChildrenMapping == null)
+            {
+                _lowestLevelChildrenMapping = CreateDictionary();
+            }
+            
             await base.SetParametersAsync(parameters);
         }
 
@@ -357,6 +368,49 @@ namespace Radzen.Blazor
             {
                 Levels.Add(level);
                 StateHasChanged();
+            }
+        }
+        
+        private IEnumerable GetLowestLevelChildren(string[] propNames, object data, int iterationCount)
+        {
+            var nextLayerData = PropertyAccess.GetValue(data, propNames[iterationCount]) as IEnumerable;
+            if (iterationCount == propNames.Length - 1)
+            {
+                foreach (var child in nextLayerData)
+                {
+                    yield return child;
+                }
+            }
+            else
+            {
+                foreach (var nextLayerSingleObject in nextLayerData)
+                {
+                    var results = GetLowestLevelChildren(propNames, nextLayerSingleObject, iterationCount + 1);
+                    foreach (var result in results)
+                    {
+                        yield return result;
+                    }
+                }
+            }
+        }
+
+        private Dictionary<object, IEnumerable> CreateDictionary(IEnumerable topLayerData)
+        {
+            Dictionary<object, IEnumerable> result = new Dictionary<object, IEnumerable>();
+            string[] propNames = ChildrenPropertyNames;
+            IEnumerable<(object, IEnumerable)> allNodesOtherThanLowestLevel = GetAllParentNodes();
+
+            foreach (object node in allNodesOtherThanLowestLevel)
+            {
+                result.Add(node, GetLowestLevelChildren(ChildrenPropertyNames, node, ));
+            }
+        }
+
+        private IEnumerable GetAllParentNodes()
+        {
+            foreach (var VARIABLE in COLLECTION)
+            {
+                
             }
         }
     }
