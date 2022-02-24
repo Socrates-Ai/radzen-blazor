@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
 namespace Radzen.Blazor
@@ -38,7 +37,6 @@ namespace Radzen.Blazor
             return "rz-tree";
         }
 
-        internal Dictionary<object, IEnumerable> _lowestLevelChildrenMapping { get; set; } 
         internal RadzenTreeItem SelectedItem { get; private set; }
 
         IList<RadzenTreeLevel> Levels { get; set; } = new List<RadzenTreeLevel>();
@@ -159,10 +157,17 @@ namespace Radzen.Blazor
         [Parameter]
         public IEnumerable<object> CheckedValues { get; set; } = Enumerable.Empty<object>();
 
+        /// <summary>
+        /// Gets or sets the checked values. Use with <c>@bind-CheckedBottomLayerValues</c> to sync it with a property.
+        /// </summary>
+        [Parameter]
+        public IEnumerable<object> CheckedBottomLayerValues { get; set; } = Enumerable.Empty<object>();
+        
         [Parameter] public string ChildrenPropertiesChain { get; set; } = string.Empty;
 
-        internal string[] ChildrenPropertyNames => ChildrenPropertiesChain.Split('.');
-
+        internal Dictionary<object, IEnumerable> LowestLevelChildrentDict { get; set; } 
+        private string[] ChildrenPropertyNames => ChildrenPropertiesChain.Split('.');
+        
         internal List<RadzenTreeItem> items = new List<RadzenTreeItem>();
 
         internal void AddItem(RadzenTreeItem item)
@@ -186,9 +191,14 @@ namespace Radzen.Blazor
             CheckedValues = values.ToList();
             await CheckedValuesChanged.InvokeAsync(CheckedValues);
         }
-
-        internal IEnumerable<object> UncheckedValues { get; set; }
         
+        internal void SetBottomLayerCheckedValues(IEnumerable<object> values)
+        {
+            CheckedBottomLayerValues = values.ToList();
+        }
+
+        internal IEnumerable<object> UncheckedValues { get; set; } = Enumerable.Empty<object>();
+
         internal void SetUncheckedValues(IEnumerable<object> values)
         {
             UncheckedValues = values.ToList();
@@ -353,7 +363,7 @@ namespace Radzen.Blazor
                     SelectedItem = null;
                 }
             }
-            
+
             await base.SetParametersAsync(parameters);
         }
 
@@ -388,7 +398,7 @@ namespace Radzen.Blazor
                 }
             }
         }
-
+        
         internal Dictionary<object, IEnumerable> CreateDictionary()
         {
             Dictionary<object, IEnumerable> result = new Dictionary<object, IEnumerable>();
@@ -398,10 +408,10 @@ namespace Radzen.Blazor
             {
                 result.Add(pair.Item1, pair.Item2);
             }
-
+        
             return result;
         }
-
+        
         private IEnumerable<(object, IEnumerable)> GetObjectToBottomLayerItems(IEnumerable layerData, int layer, string[] propNames)
         {
             foreach (object data in layerData)
