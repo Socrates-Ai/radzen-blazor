@@ -406,12 +406,9 @@ namespace Radzen.Blazor
             }
         }
 
-        private IEnumerable GetAllParentNodes()
+        private IEnumerable GetAllParentNodes(object data, int layer, string[] propNames)
         {
-            foreach (var VARIABLE in COLLECTION)
-            {
-                
-            }
+            
         }
     }
 }
