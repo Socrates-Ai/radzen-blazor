@@ -122,6 +122,19 @@ namespace Radzen
             });
         }
 
+        /// <inheritdoc />
+        public override bool HasValue
+        {
+            get
+            {
+                if (typeof(T) == typeof(string))
+                {
+                    return !string.IsNullOrEmpty($"{internalValue}");
+                }
+                return internalValue != null;
+            }
+        }
+
         /// <summary>
         /// Renders the item.
         /// </summary>
@@ -793,7 +806,7 @@ namespace Radzen
         /// </summary>
         /// <param name="item">The item.</param>
         /// <param name="raiseChange">if set to <c>true</c> [raise change].</param>
-        protected async System.Threading.Tasks.Task SelectItem(object item, bool raiseChange = true)
+        public async System.Threading.Tasks.Task SelectItem(object item, bool raiseChange = true)
         {
             if (!Multiple)
             {

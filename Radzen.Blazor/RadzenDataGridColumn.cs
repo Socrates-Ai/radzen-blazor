@@ -63,10 +63,10 @@ namespace Radzen.Blazor
 
         internal int GetColSpan(bool isDataCell = false)
         {
-            if (!Grid.AllowCompositeDataCells && isDataCell) 
+            if (!Grid.AllowCompositeDataCells && isDataCell)
                 return 1;
 
-            var directChildColumns = Grid.childColumns.Where(c => c.Visible && c.Parent == this);
+            var directChildColumns = Grid.childColumns.Where(c => c.GetVisible() && c.Parent == this);
 
             if (Parent == null)
             {
@@ -78,7 +78,7 @@ namespace Radzen.Blazor
 
         internal int GetRowSpan(bool isDataCell = false)
         {
-            if (!Grid.AllowCompositeDataCells && isDataCell) 
+            if (!Grid.AllowCompositeDataCells && isDataCell)
                 return 1;
 
             if (Columns == null && Parent != null)
@@ -108,7 +108,7 @@ namespace Radzen.Blazor
                         _filterPropertyType = PropertyAccess.GetPropertyType(typeof(TItem), property);
                     }
                 }
-            
+
                 if (_filterPropertyType == null)
                 {
                     _filterPropertyType = Type;
@@ -125,6 +125,25 @@ namespace Radzen.Blazor
             }
         }
 
+        int? orderIndex;
+
+        /// <summary>
+        /// Gets or sets the order index.
+        /// </summary>
+        /// <value>The order index.</value>
+        [Parameter]
+        public int? OrderIndex { get; set; }
+
+        internal int? GetOrderIndex()
+        {
+            return orderIndex ?? OrderIndex;
+        }
+
+        internal void SetOrderIndex(int? value)
+        {
+            orderIndex = value;
+        }
+
         /// <summary>
         /// Gets or sets the sort order.
         /// </summary>
@@ -132,30 +151,22 @@ namespace Radzen.Blazor
         [Parameter]
         public SortOrder? SortOrder { get; set; }
 
-        bool _visible = true;
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="RadzenDataGridColumn{TItem}"/> is visible.
         /// </summary>
         /// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
         [Parameter]
-        public bool Visible
-        {
-            get
-            {
-                if (Grid != null && Grid.selectedColumns != null && Pickable)
-                {
-                    return ((IEnumerable<object>)Grid.selectedColumns).Cast<RadzenDataGridColumn<TItem>>().Contains(this);
-                }
+        public bool Visible { get; set; } = true;
 
-                return _visible;
-            }
-            set
-            {
-                if (_visible != value)
-                {
-                    _visible = value;
-                }
-            }
+        bool? _visible;
+        internal bool GetVisible()
+        {
+            return _visible ?? Visible;
+        }
+
+        internal void SetVisible(bool? value)
+        {
+            _visible = value;
         }
 
         /// <summary>
@@ -426,7 +437,7 @@ namespace Radzen.Blazor
 
             if (forCell && IsFrozen())
             {
-                var visibleColumns = Grid.ColumnsCollection.Where(c => c.Visible).ToList();
+                var visibleColumns = Grid.ColumnsCollection.Where(c => c.GetVisible()).ToList();
                 var left = visibleColumns
                     .TakeWhile((c, i) => visibleColumns.IndexOf(this) > i && c.IsFrozen())
                     .Sum(c => {
@@ -442,7 +453,7 @@ namespace Radzen.Blazor
                 style.Add($"left:{left}px");
             }
 
-            if ((isHeaderOrFooterCell && IsFrozen() || isHeaderOrFooterCell && !IsFrozen() || !isHeaderOrFooterCell && IsFrozen()) && Grid.ColumnsCollection.Where(c => c.Visible && c.IsFrozen()).Any())
+            if ((isHeaderOrFooterCell && IsFrozen() || isHeaderOrFooterCell && !IsFrozen() || !isHeaderOrFooterCell && IsFrozen()) && Grid.ColumnsCollection.Where(c => c.GetVisible() && c.IsFrozen()).Any())
             {
                 style.Add($"z-index:{(isHeaderOrFooterCell && IsFrozen() ? 2 : 1)}");
             }
@@ -568,7 +579,7 @@ namespace Radzen.Blazor
             if (parameters.DidParameterChange(nameof(FilterValue), FilterValue))
             {
                 filterValue = parameters.GetValueOrDefault<object>(nameof(FilterValue));
-                
+
                 if (FilterTemplate != null)
                 {
                     FilterValue = filterValue;
@@ -585,7 +596,7 @@ namespace Radzen.Blazor
                     {
                         await Grid.Reload();
                     }
-                    
+
                     return;
                 }
             }
@@ -659,6 +670,25 @@ namespace Radzen.Blazor
             {
                 secondFilterValue = value;
             }
+        }
+
+        internal bool CanSetFilterValue()
+        { 
+            return GetFilterOperator() == FilterOperator.IsNull || GetFilterOperator() == FilterOperator.IsNotNull;
+        }
+
+        internal void ClearFilters()
+        {
+            SetFilterValue(null);
+            SetFilterValue(null, false);
+            SetFilterOperator(null);
+            SetSecondFilterOperator(null);
+
+            FilterValue = null;
+            SecondFilterValue = null;
+            FilterOperator = default(FilterOperator);
+            SecondFilterOperator = default(FilterOperator);
+            LogicalFilterOperator = default(LogicalFilterOperator);
         }
 
         /// <summary>
@@ -740,6 +770,40 @@ namespace Radzen.Blazor
                     return Grid?.IsNullText;
                 case FilterOperator.IsNotNull:
                     return Grid?.IsNotNullText;
+                default:
+                    return $"{filterOperator}";
+            }
+        }
+
+        internal string GetFilterOperatorSymbol(FilterOperator filterOperator)
+        {
+            var symbol = Grid.FilterCaseSensitivity == FilterCaseSensitivity.CaseInsensitive ? "a" : "A";
+            switch (filterOperator)
+            {
+                case FilterOperator.Contains:
+                    return $"*{symbol}*";
+                case FilterOperator.DoesNotContain:
+                    return $"*{symbol}*";
+                case FilterOperator.StartsWith:
+                    return $"{symbol}**";
+                case FilterOperator.EndsWith:
+                    return $"**{symbol}";
+                case FilterOperator.Equals:
+                    return "=";
+                case FilterOperator.GreaterThan:
+                    return ">";
+                case FilterOperator.GreaterThanOrEquals:
+                    return "≥";
+                case FilterOperator.LessThan:
+                    return "<";
+                case FilterOperator.LessThanOrEquals:
+                    return "≤";
+                case FilterOperator.NotEquals:
+                    return "≠";
+                case FilterOperator.IsNull:
+                    return "∅";
+                case FilterOperator.IsNotNull:
+                    return "!∅";
                 default:
                     return $"{filterOperator}";
             }

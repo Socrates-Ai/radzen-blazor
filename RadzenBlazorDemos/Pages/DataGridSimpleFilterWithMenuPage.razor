@@ -1,0 +1,62 @@
+﻿@page "/datagrid-simple-filter-menu"
+
+@using RadzenBlazorDemos.Data
+@using RadzenBlazorDemos.Models.Northwind
+@using Microsoft.EntityFrameworkCore
+
+@inject NorthwindContext dbContext
+
+<h1>DataGrid <strong>Simple Filter Mode</strong></h1>
+
+<RadzenExample Name="DataGrid" Source="DataGridSimpleFilterWithMenu" Heading="false">
+    <div class="row">
+        <div class="col-xl-2 mb-4">
+            <h3>Filter case sensitivity</h3>
+            <RadzenDropDown @bind-Value="filterCaseSensitivity" Data="@(Enum.GetValues(typeof(FilterCaseSensitivity)))">
+                <Template>
+                    @Enum.GetName(context)
+                </Template>
+            </RadzenDropDown>
+        </div>
+        <div class="col-xl-6 mb-4">
+            <h3>Filter logical operator</h3>
+            <RadzenDropDown @bind-Value="logicalFilterOperator" Data="@(Enum.GetValues(typeof(LogicalFilterOperator)))">
+                <Template>
+                    @Enum.GetName(context)
+                </Template>
+            </RadzenDropDown>
+        </div>
+    </div>
+    <h3>Orders</h3>
+    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" 
+        FilterMode="FilterMode.SimpleWithMenu" PageSize="5" AllowPaging="true" AllowSorting="true" Data="@orders" TItem="Order" ColumnWidth="300px" 
+        FilterCaseSensitivity="@filterCaseSensitivity"
+        LogicalFilterOperator="@logicalFilterOperator">
+        <Columns>
+            <RadzenDataGridColumn TItem="Order" Property="OrderID" Title="Order ID" />
+            <RadzenDataGridColumn TItem="Order" Property="Customer.CompanyName" Title="Customer" />
+            <RadzenDataGridColumn TItem="Order" Property="Employee.LastName" Title="Employee">
+                <Template Context="order">
+                    <RadzenImage Path="@order.Employee?.Photo" style="width: 32px; height: 32px; border-radius: 16px; margin-right: 6px;" />
+                    @order.Employee?.FirstName @order.Employee?.LastName
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="Order" Property="OrderDate" Title="Order Date" FormatString="{0:d}" />
+            <RadzenDataGridColumn TItem="Order" Property="RequiredDate" Title="Required Date" FormatString="{0:d}" />
+            <RadzenDataGridColumn TItem="Order" Property="ShippedDate" Title="Shipped Date" FormatString="{0:d}" />
+            <RadzenDataGridColumn TItem="Order" Property="ShipName" Title="Ship Name" />
+            <RadzenDataGridColumn TItem="Order" Property="ShipCountry" Title="Ship Country" />
+        </Columns>
+    </RadzenDataGrid>
+</RadzenExample>
+@code {
+    IEnumerable<Order> orders;
+
+    FilterCaseSensitivity filterCaseSensitivity = FilterCaseSensitivity.CaseInsensitive;
+    LogicalFilterOperator logicalFilterOperator = LogicalFilterOperator.Or;
+
+    protected override void OnInitialized()
+    {
+        orders = dbContext.Orders.Include("Customer").Include("Employee");
+    }
+}

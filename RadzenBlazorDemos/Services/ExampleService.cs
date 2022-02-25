@@ -127,6 +127,7 @@ namespace RadzenBlazorDemos
                         },
                         new Example
                         {
+                            Updated = true,
                             Name = "Reorder",
                             Path = "datagrid-column-reorder",
                             Title = "Blazor DataGrid column reorder",
@@ -165,6 +166,7 @@ namespace RadzenBlazorDemos
                 },
                 new Example
                 {
+                    Updated = true,
                     Name = "Filtering",
                     Icon = "&#xef4f",
                     Children = new []
@@ -175,6 +177,14 @@ namespace RadzenBlazorDemos
                             Path = "datagrid-simple-filter",
                             Title = "Blazor DataGrid Simple filter mode",
                             Tags = new [] { "filter", "simple", "grid", "datagrid", "table"}
+                        },
+                        new Example
+                        {
+                            New = true,
+                            Name = "Simple with menu",
+                            Path = "datagrid-simple-filter-menu",
+                            Title = "Blazor DataGrid Simple filter mode with menu",
+                            Tags = new [] { "filter", "simple", "grid", "datagrid", "table", "menu" }
                         },
                         new Example
                         {
