@@ -167,7 +167,7 @@ namespace Radzen.Blazor
                 Tree.LowestLevelChildrentDict = Tree.CreateDictionary();
             }
 
-            if (!Tree.LowestLevelChildrentDict.Keys.Contains(Value))
+            if (Tree.LowestLevelChildrentDict != null && !Tree.LowestLevelChildrentDict.Keys.Contains(Value))
             {
                 Tree.LowestLevelChildrentDict = Tree.CreateDictionary();
             }

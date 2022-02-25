@@ -335,6 +335,10 @@ namespace Radzen.Blazor
                     }
                     else
                     {
+                        if (CheckedValues == null)
+                        {
+                            CheckedValues = Enumerable.Empty<object>();
+                        }
                         await SetCheckedValues(CheckedValues);
                     }
                 }
