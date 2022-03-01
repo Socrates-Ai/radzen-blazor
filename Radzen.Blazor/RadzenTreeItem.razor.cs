@@ -344,8 +344,6 @@ namespace Radzen.Blazor
                 }
             }
 
-            // string valueJson = JsonSerializer.Serialize(Value);
-            // bool isInCheckedValues = checkedVals.Any(x => JsonSerializer.Serialize(x) == valueJson);
             bool isInCheckedValues = checkedVals.Any(x => x.Equals(Value));
             return isInCheckedValues;
         }
@@ -355,15 +353,12 @@ namespace Radzen.Blazor
             if (Tree.LowestLevelChildrentDict != null && Tree.LowestLevelChildrentDict.Count != 0)
             {
                 IEnumerable bottomLayer = Tree.LowestLevelChildrentDict[Value];
-                var checkedValues = Tree.CheckedBottomLayerValues
-                    // .Select(x => JsonSerializer.Serialize(x))
-                    .ToHashSet();
+                var checkedValues = Tree.CheckedBottomLayerValues.ToArray();
 
                 int isChecked = 0;
                 int isNotChecked = 0;
                 foreach (object bottomLayerItem in bottomLayer)
                 {
-                    // if (checkedValues.Contains(JsonSerializer.Serialize(bottomLayerItem)))
                     if (checkedValues.Any(x => bottomLayerItem.Equals(x)))
                     {
                         isChecked++;
