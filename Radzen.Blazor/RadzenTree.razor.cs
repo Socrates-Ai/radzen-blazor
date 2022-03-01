@@ -157,6 +157,8 @@ namespace Radzen.Blazor
         [Parameter]
         public IEnumerable<object> CheckedValues { get; set; } = Enumerable.Empty<object>();
 
+        private IEnumerable<object> GetCheckedValues => CheckedValues.ToList();
+
         /// <summary>
         /// Gets or sets the checked values. Use with <c>@bind-CheckedBottomLayerValues</c> to sync it with a property.
         /// </summary>
@@ -190,6 +192,7 @@ namespace Radzen.Blazor
         {
             CheckedValues = values.ToList();
             await CheckedValuesChanged.InvokeAsync(CheckedValues);
+            await CheckedBottomLayerValuesChanged.InvokeAsync(CheckedBottomLayerValues);
         }
         
         internal void SetBottomLayerCheckedValues(IEnumerable<object> values)
@@ -209,6 +212,12 @@ namespace Radzen.Blazor
         /// </summary>
         [Parameter]
         public EventCallback<IEnumerable<object>> CheckedValuesChanged { get; set; }
+        
+        /// <summary>
+        /// A callback which will be invoked when <see cref="CheckedBottomLayerValues" /> changes.
+        /// </summary>
+        [Parameter]
+        public EventCallback<IEnumerable<object>> CheckedBottomLayerValuesChanged { get; set; }
 
         void RenderTreeItem(RenderTreeBuilder builder, object data, RenderFragment<RadzenTreeItem> template, Func<object, string> text,
             Func<object, bool> hasChildren, Func<object, bool> expanded, Func<object, bool> selected, IEnumerable children = null)
