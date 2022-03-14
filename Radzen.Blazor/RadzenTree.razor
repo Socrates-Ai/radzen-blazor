@@ -6,11 +6,11 @@
 @if (Visible)
 {
     <div @ref="@Element" @attributes="Attributes" class="@GetCssClass()" style="@Style" id="@GetId()">
-    <ul class="rz-tree-container">
-        <CascadingValue Value=this>
-            @ChildContent
-        </CascadingValue>
-        @if (Data != null && Levels.Any())
+        <ul class="rz-tree-container">
+            <CascadingValue Value=this>
+                @ChildContent
+            </CascadingValue>
+            @if (Data != null && Levels.Any())
             {
                 <CascadingValue Value=this>
                     @RenderChildren(Data, 0)

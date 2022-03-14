@@ -388,7 +388,7 @@ namespace Radzen.Blazor
                 StateHasChanged();
             }
         }
-        
+
         private IEnumerable GetLowestLevelChildren(string[] propNames, object data, int layer)
         {
             var nextLayerData = PropertyAccess.GetValue(data, propNames[layer]) as IEnumerable;
@@ -411,20 +411,7 @@ namespace Radzen.Blazor
                 }
             }
         }
-        
-        internal Dictionary<object, IEnumerable> CreateDictionary()
-        {
-            Dictionary<object, IEnumerable> result = new Dictionary<object, IEnumerable>();
-            string[] propNames = ChildrenPropertyNames;
-            var pairs = GetObjectToBottomLayerItems(Data, 0, propNames);
-            foreach (var pair in pairs)
-            {
-                result.Add(pair.Item1, pair.Item2);
-            }
-        
-            return result;
-        }
-        
+
         private IEnumerable<(object, IEnumerable)> GetObjectToBottomLayerItems(IEnumerable layerData, int layer, string[] propNames)
         {
             foreach (object data in layerData)
@@ -440,6 +427,19 @@ namespace Radzen.Blazor
                     }
                 }
             }
+        }
+
+        internal Dictionary<object, IEnumerable> CreateDictionary()
+        {
+            Dictionary<object, IEnumerable> result = new Dictionary<object, IEnumerable>();
+            string[] propNames = ChildrenPropertyNames;
+            var pairs = GetObjectToBottomLayerItems(Data, 0, propNames);
+            foreach (var pair in pairs)
+            {
+                result.Add(pair.Item1, pair.Item2);
+            }
+        
+            return result;
         }
     }
 }
