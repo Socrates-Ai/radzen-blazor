@@ -190,7 +190,7 @@ namespace Radzen.Blazor
 
         internal async Task SetCheckedValues(IEnumerable<object> values)
         {
-            CheckedValues = values.ToList();
+            CheckedValues = values != null ? values.ToList() : null;
             await CheckedValuesChanged.InvokeAsync(CheckedValues);
             await CheckedBottomLayerValuesChanged.InvokeAsync(CheckedBottomLayerValues);
         }
