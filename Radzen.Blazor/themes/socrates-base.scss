@@ -1,4 +1,6 @@
-﻿@import 'default-base.scss';
+﻿$SocratesRed: #E82C2A;
+$danger: $SocratesRed;
+@import 'default-base.scss';
 
 ul.rz-profile-menu .rz-navigation-menu .rz-navigation-item-wrapper:hover {
   background-color: black;
@@ -25,3 +27,5 @@ div.rz-dialog-content div.dialog-full-height {
 div.rz-dialog div.rz-dialog-content{
   padding: 0;
 }
+
+
