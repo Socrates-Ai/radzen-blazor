@@ -29,7 +29,7 @@
                         {
                             <div class="rz-group-header-item">
                                 <span class="rz-group-header-item-title">@gd.GetTitle()</span>
-                                <a href="javascript:void(0)" @onclick=@(args => { groups.Remove(gd); _groupedPagedView = null; }) role="button" class="rz-dialog-titlebar-icon rz-dialog-titlebar-close">
+                                <a href="javascript:void(0)" @onclick=@(args => RemoveGroup(gd)) role="button" class="rz-dialog-titlebar-icon rz-dialog-titlebar-close">
                                     <span class="rzi rzi-times"></span>
                                 </a>
                             </div>
@@ -45,12 +45,12 @@
                 @if(AllowColumnPicking)
                 {
                     <div class="rz-column-picker">
-                        <RadzenDropDown SelectAllText="All"
+                        <RadzenDropDown SelectAllText="@AllColumnsText"
                                         MaxSelectedLabels="2" 
                                         SelectedItemsText="@ColumnsShowingText" Change=@ToggleColumns
                                         @bind-Value="@selectedColumns" 
                                         Multiple="true" 
-                                        Placeholder="Columns" 
+                                        Placeholder="@ColumnsText" 
                                         Data="allPickableColumns" 
                                         TextProperty="Title" />
                     </div>

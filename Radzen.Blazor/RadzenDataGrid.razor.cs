@@ -26,7 +26,7 @@ namespace Radzen.Blazor
     /// </example>
     public partial class RadzenDataGrid<TItem> : PagedDataBoundComponent<TItem>
     {
-#if NET5_0_OR_GREATER
+#if NET5
         internal void SetAllowVirtualization(bool allowVirtualization)
         {
             AllowVirtualization = allowVirtualization;
@@ -88,7 +88,7 @@ namespace Radzen.Blazor
         {
             return new RenderFragment(builder =>
             {
-#if NET5_0_OR_GREATER
+#if NET5
                 if (AllowVirtualization)
                 {
                     if(AllowGrouping && groups.Any() && !LoadData.HasDelegate)
@@ -229,6 +229,30 @@ namespace Radzen.Blazor
             }
         }
 
+        internal void RemoveGroup(GroupDescriptor gd)
+        {
+            groups.Remove(gd); 
+            _groupedPagedView = null;
+
+            var column = columns.Where(c => c.GetGroupProperty() == gd.Property).FirstOrDefault();
+            if (column != null)
+            {
+                if (HideGroupedColumn)
+                {
+                    column.SetVisible(true);
+                }
+
+                Group.InvokeAsync(new DataGridColumnGroupEventArgs<TItem>() { Column = column, GroupDescriptor = null });
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the column group callback.
+        /// </summary>
+        /// <value>The column group callback.</value>
+        [Parameter]
+        public EventCallback<DataGridColumnGroupEventArgs<TItem>> Group { get; set; }
+
         internal string getFrozenColumnClass(RadzenDataGridColumn<TItem> column, IList<RadzenDataGridColumn<TItem>> visibleColumns)
         {
             return column.IsFrozen() ? "rz-frozen-cell" : "";
@@ -274,6 +298,11 @@ namespace Radzen.Blazor
         protected void ApplyDateFilterByFilterOperator(RadzenDataGridColumn<TItem> column, FilterOperator filterOperator)
         {
             column.SetFilterOperator(filterOperator);
+        }
+
+        internal IJSRuntime GetJSRuntime()
+        {
+            return JSRuntime;
         }
 
         private List<RadzenDataGridColumn<TItem>> columns = new List<RadzenDataGridColumn<TItem>>();
@@ -470,6 +499,16 @@ namespace Radzen.Blazor
                     skip = 0;
                     CurrentPage = 0;
 
+                    Filter.InvokeAsync(new DataGridColumnFilterEventArgs<TItem>()
+                    {
+                        Column = column,
+                        FilterValue = column.GetFilterValue(),
+                        SecondFilterValue = column.GetSecondFilterValue(),
+                        FilterOperator = column.GetFilterOperator(),
+                        SecondFilterOperator = column.GetSecondFilterOperator(),
+                        LogicalFilterOperator = column.GetLogicalFilterOperator()
+                    });
+
                     if (LoadData.HasDelegate && IsVirtualizationAllowed())
                     {
                         Data = null;
@@ -493,6 +532,13 @@ namespace Radzen.Blazor
             }
         }
 
+        /// <summary>
+        /// Gets or sets the column sort callback.
+        /// </summary>
+        /// <value>The column sort callback.</value>
+        [Parameter]
+        public EventCallback<DataGridColumnSortEventArgs<TItem>> Sort { get; set; }
+
         internal void OnSort(EventArgs args, RadzenDataGridColumn<TItem> column)
         {
             if (AllowSorting && column.Sortable)
@@ -506,6 +552,8 @@ namespace Radzen.Blazor
                 {
                     SetColumnSortOrder(column);
 
+                    Sort.InvokeAsync(new DataGridColumnSortEventArgs<TItem>() { Column = column, SortOrder = column.GetSortOrder() });
+
                     if (LoadData.HasDelegate && IsVirtualizationAllowed())
                     {
                         Data = null;
@@ -515,6 +563,13 @@ namespace Radzen.Blazor
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the column filter callback.
+        /// </summary>
+        /// <value>The column filter callback.</value>
+        [Parameter]
+        public EventCallback<DataGridColumnFilterEventArgs<TItem>> Filter { get; set; }
 
         internal async Task ClearFilter(RadzenDataGridColumn<TItem> column, bool closePopup = false)
         {
@@ -527,6 +582,16 @@ namespace Radzen.Blazor
 
             skip = 0;
             CurrentPage = 0;
+
+            await Filter.InvokeAsync(new DataGridColumnFilterEventArgs<TItem>() 
+            { 
+                Column = column, 
+                FilterValue = column.GetFilterValue(),
+                SecondFilterValue = column.GetSecondFilterValue(),
+                FilterOperator = column.GetFilterOperator(),
+                SecondFilterOperator = column.GetSecondFilterOperator(),
+                LogicalFilterOperator = column.GetLogicalFilterOperator()
+            });
 
             if (LoadData.HasDelegate && IsVirtualizationAllowed())
             {
@@ -813,7 +878,7 @@ namespace Radzen.Blazor
         /// <value>The empty template.</value>
         [Parameter]
         public RenderFragment EmptyTemplate { get; set; }
-#if NET5_0_OR_GREATER
+#if NET5
         /// <summary>
         /// Gets or sets a value indicating whether this instance is virtualized.
         /// </summary>
@@ -841,6 +906,13 @@ namespace Radzen.Blazor
         /// <value><c>true</c> if multi column sorting is allowed; otherwise, <c>false</c>.</value>
         [Parameter]
         public bool AllowMultiColumnSorting { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether multi column sorting index is shown.
+        /// </summary>
+        /// <value><c>true</c> if multi column sorting index is shown; otherwise, <c>false</c>.</value>
+        [Parameter]
+        public bool ShowMultiColumnSortingIndex { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether filtering is allowed.
@@ -878,11 +950,32 @@ namespace Radzen.Blazor
         public string ColumnsShowingText { get; set; } = "columns showing";
 
         /// <summary>
+        /// Gets or sets the column picker all columns text.
+        /// </summary>
+        /// <value>The column picker all columns text.</value>
+        [Parameter]
+        public string AllColumnsText { get; set; } = "All";
+
+        /// <summary>
+        /// Gets or sets the column picker columns text.
+        /// </summary>
+        /// <value>The column picker columns text.</value>
+        [Parameter]
+        public string ColumnsText { get; set; } = "Columns";
+
+        /// <summary>
         /// Gets or sets a value indicating whether grouping is allowed.
         /// </summary>
         /// <value><c>true</c> if grouping is allowed; otherwise, <c>false</c>.</value>
         [Parameter]
         public bool AllowGrouping { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether grouped column should be hidden.
+        /// </summary>
+        /// <value><c>true</c> if grouped columns should be hidden; otherwise, <c>false</c>.</value>
+        [Parameter]
+        public bool HideGroupedColumn { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether group footers are visible even when the group is collapsed.
@@ -1053,7 +1146,7 @@ namespace Radzen.Blazor
 
         internal bool IsVirtualizationAllowed()
         {
-    #if NET5_0_OR_GREATER
+    #if NET5
             return AllowVirtualization;
     #else
             return false;
@@ -1236,7 +1329,7 @@ namespace Radzen.Blazor
             {
                 Count = 1;
             }
-#if NET5_0_OR_GREATER
+#if NET5
             if (AllowVirtualization)
             {
                 if(!LoadData.HasDelegate)
@@ -1267,7 +1360,7 @@ namespace Radzen.Blazor
             }
             else
             {
-#if NET5_0_OR_GREATER
+#if NET5
                 if (AllowVirtualization)
                 {
                     if(virtualize != null)
@@ -1739,7 +1832,7 @@ namespace Radzen.Blazor
                 }
                 else
                 {
-#if NET5_0_OR_GREATER
+#if NET5
                     itemToInsert = default(TItem);
                     if(virtualize != null)
                     {
@@ -1795,7 +1888,7 @@ namespace Radzen.Blazor
             }
             else
             {
-#if NET5_0_OR_GREATER
+#if NET5
                 if(virtualize != null)
                 {
                     await virtualize.RefreshDataAsync();
@@ -1902,6 +1995,13 @@ namespace Radzen.Blazor
                         groups.Add(descriptor);
                         _groupedPagedView = null;
 
+                        if (HideGroupedColumn) 
+                        {
+                            column.SetVisible(false);
+                        }
+
+                        await Group.InvokeAsync(new DataGridColumnGroupEventArgs<TItem>() { Column = column, GroupDescriptor = descriptor });
+
                         if (IsVirtualizationAllowed())
                         {
                             await Reload();
@@ -1926,6 +2026,7 @@ namespace Radzen.Blazor
             if (column != null)
             {
                 SetColumnSortOrder(column);
+                Sort.InvokeAsync(new DataGridColumnSortEventArgs<TItem>() { Column = column, SortOrder = column.GetSortOrder() });
             }
 
             if (LoadData.HasDelegate && IsVirtualizationAllowed())
