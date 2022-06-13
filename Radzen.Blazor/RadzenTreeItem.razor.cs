@@ -18,8 +18,9 @@ namespace Radzen.Blazor
             .Add("rz-treenode-content-selected", selected);
 
         ClassList IconClassList => ClassList.Create("rz-tree-toggler rzi")
-                                               .Add("rzi-caret-down", clientExpanded)
-                                               .Add("rzi-caret-right", !clientExpanded);
+            .Add("rzi-caret-down", clientExpanded)
+            .Add("rzi-caret-right", !clientExpanded);
+
         /// <summary>
         /// Gets or sets the child content.
         /// </summary>
@@ -117,6 +118,7 @@ namespace Radzen.Blazor
         }
 
         bool clientExpanded;
+
         internal async Task Toggle()
         {
             if (expanded)
@@ -252,12 +254,14 @@ namespace Radzen.Blazor
                 if (value == true)
                 {
                     var layerVales = bottomLayerVales as object[] ?? bottomLayerVales.ToArray();
-                    IEnumerable<object> itemsToAppend = layerVales.Where(x => !Tree.CheckedBottomLayerValues.Any(x.Equals));
+                    IEnumerable<object> itemsToAppend =
+                        layerVales.Where(x => !Tree.CheckedBottomLayerValues.Any(x.Equals));
                     Tree.SetBottomLayerCheckedValues(Tree.CheckedBottomLayerValues.Concat(itemsToAppend));
                 }
                 else if (value == false)
                 {
-                    Tree.SetBottomLayerCheckedValues(Tree.CheckedBottomLayerValues.Where(x => !bottomLayerVales.Any(x.Equals)));
+                    Tree.SetBottomLayerCheckedValues(
+                        Tree.CheckedBottomLayerValues.Where(x => !bottomLayerVales.Any(x.Equals)));
                 }
             }
             else
@@ -272,7 +276,7 @@ namespace Radzen.Blazor
                 }
             }
         }
-        
+
         async Task CheckedChange(bool? value)
         {
             if (Tree != null)
@@ -281,7 +285,7 @@ namespace Radzen.Blazor
                 {
                     UpdateBottomLayerCheckValues(value);
                 }
-                
+
                 var checkedValues = GetCheckedValues();
 
                 if (Tree.AllowCheckChildren)
@@ -351,34 +355,35 @@ namespace Radzen.Blazor
         private bool? EvaluateBottomLayer()
         {
             if (Tree.LowestLevelChildrentDict != null && Tree.LowestLevelChildrentDict.Count != 0)
-            {
-                IEnumerable bottomLayer = Tree.LowestLevelChildrentDict[Value];
-                var checkedValues = Tree.CheckedBottomLayerValues.ToArray();
+                if (Tree?.AllowCheckParents == true && HasChildren && IsOneChildUnchecked() && IsOneChildChecked())
+                {
+                    IEnumerable bottomLayer = Tree.LowestLevelChildrentDict[Value];
+                    var checkedValues = Tree.CheckedBottomLayerValues.ToArray();
 
-                int isChecked = 0;
-                int isNotChecked = 0;
-                foreach (object bottomLayerItem in bottomLayer)
-                {
-                    if (checkedValues.Any(x => bottomLayerItem.Equals(x)))
+                    int isChecked = 0;
+                    int isNotChecked = 0;
+                    foreach (object bottomLayerItem in bottomLayer)
                     {
-                        isChecked++;
+                        if (checkedValues.Any(x => bottomLayerItem.Equals(x)))
+                        {
+                            isChecked++;
+                        }
+                        else
+                        {
+                            isNotChecked++;
+                        }
                     }
-                    else
-                    {
-                        isNotChecked++;
-                    }
-                }
 
-                if (isChecked > 0 && isNotChecked > 0)
-                {
-                    return null;
+                    if (isChecked > 0 && isNotChecked > 0)
+                    {
+                        return null;
+                    }
+
+                    if (isChecked > 0 && isNotChecked == 0)
+                    {
+                        return true;
+                    }
                 }
-                
-                if(isChecked > 0 && isNotChecked == 0)
-                {
-                    return true;
-                }
-            }
 
             return false;
         }

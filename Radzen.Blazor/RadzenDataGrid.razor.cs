@@ -223,7 +223,8 @@ namespace Radzen.Blazor
             {
                 if (_groupedPagedView == null)
                 {
-                    var query = Groups.Count(g => g.SortOrder == null) == Groups.Count ? View : View.OrderBy(string.Join(',', Groups.Select(g => $"np({g.Property}) {(g.SortOrder == null ? "" : g.SortOrder == SortOrder.Ascending ? " asc" : " desc")}")));
+                    var orderBy = GetOrderBy();
+                    var query = Groups.Count(g => g.SortOrder == null) == Groups.Count || !string.IsNullOrEmpty(orderBy) ? View : View.OrderBy(string.Join(',', Groups.Select(g => $"np({g.Property}) {(g.SortOrder == null ? "" : g.SortOrder == SortOrder.Ascending ? " asc" : " desc")}")));
                     var v = (AllowPaging && !LoadData.HasDelegate ? query.Skip(skip).Take(PageSize) : query).ToList().AsQueryable();
                     _groupedPagedView = v.GroupByMany(Groups.Select(g => $"np({g.Property})").ToArray()).ToList();
                 }
@@ -1394,6 +1395,7 @@ namespace Radzen.Blazor
                     if(virtualize != null)
                     {
                         await virtualize.RefreshDataAsync();
+                        await virtualize.RefreshDataAsync();
                     }
 
                     if(groupVirtualize != null)
@@ -1478,7 +1480,7 @@ namespace Radzen.Blazor
 
         internal async System.Threading.Tasks.Task ExpandGroupItem(RadzenDataGridGroupRow<TItem> item, bool? expandedOnLoad)
         {
-            if (expandedOnLoad != null)
+            if (expandedOnLoad == true)
                 return;
 
             if (!collapsedGroupItems.Keys.Contains(item))

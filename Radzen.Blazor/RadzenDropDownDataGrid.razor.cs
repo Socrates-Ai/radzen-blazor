@@ -349,13 +349,19 @@ namespace Radzen.Blazor
                 {
                     if (!string.IsNullOrEmpty(ValueProperty))
                     {
-                        SelectedItem = Query.Where($@"{ValueProperty} == @0", value).FirstOrDefault();
+                        var item = Query.Where($@"{ValueProperty} == @0", value).FirstOrDefault();
+                        if (item != null)
+                        {
+                            SelectedItem = item;
+                        }
                     }
                     else
                     {
-                        selectedItem = internalValue;
+                        SelectedItem = internalValue;
                     }
-                    SelectedItemChanged?.Invoke(selectedItem);
+                    SelectedItemChanged?.Invoke(SelectedItem);
+                    selectedItems.Clear();
+                    selectedItems.Add(SelectedItem);
                 }
                 else
                 {
@@ -375,7 +381,7 @@ namespace Radzen.Blazor
                         }
                         else
                         {
-                            selectedItems.AddRange(values);
+                            ((List<object>)selectedItems).AddRange(values);
                         }
 
                     }
@@ -479,7 +485,7 @@ namespace Radzen.Blazor
 
         async Task RefreshAfterFilter()
         {
-    #if NET5
+#if NET5
             if (grid?.virtualize != null)
             {
                 if(string.IsNullOrEmpty(searchText))
@@ -487,6 +493,7 @@ namespace Radzen.Blazor
                     if(LoadData.HasDelegate)
                     {
                         Data = null;
+                        await grid.Reload();
                     }
                     else
                     {
@@ -496,7 +503,7 @@ namespace Radzen.Blazor
                 }
                 await grid.virtualize.RefreshDataAsync();
             }
-    #endif 
+#endif
             StateHasChanged();
             await grid.FirstPage(true);
 
