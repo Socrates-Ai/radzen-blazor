@@ -482,7 +482,7 @@ namespace Radzen
                     Debounce(DebounceFilter, FilterDelay);
                 }
             }
-            else if(AllowFiltering && isFilter)
+            else if (AllowFiltering && isFilter)
             {
                 Debounce(DebounceFilter, FilterDelay);
             }
@@ -536,7 +536,7 @@ namespace Radzen
                 else
                 {
                     await LoadData.InvokeAsync(await GetLoadDataArgs());
-                }   
+                }
             }
 
             await JSRuntime.InvokeAsync<string>("Radzen.repositionPopup", Element, PopupID);
@@ -693,13 +693,20 @@ namespace Radzen
         /// <returns><c>true</c> if the specified item is selected; otherwise, <c>false</c>.</returns>
         internal bool isSelected(object item)
         {
-            if (Multiple)
+            if (LoadData.HasDelegate && !string.IsNullOrEmpty(ValueProperty))
             {
-                return selectedItems.IndexOf(item) != -1;
+                return IsItemSelectedByValue(PropertyAccess.GetValue(item, ValueProperty));
             }
             else
             {
-                return item == selectedItem;
+                if (Multiple)
+                {
+                    return selectedItems.IndexOf(item) != -1;
+                }
+                else
+                {
+                    return item == selectedItem;
+                }
             }
         }
 
@@ -849,13 +856,29 @@ namespace Radzen
             }
             else
             {
-                if (selectedItems.IndexOf(item) == -1)
+                if (!string.IsNullOrEmpty(ValueProperty))
                 {
-                    selectedItems.Add(item);
+                    if (LoadData.HasDelegate)
+                    {
+                        var v = PropertyAccess.GetValue(item, ValueProperty);
+                        var si = (selectedItems ?? Enumerable.Empty<object>()).AsQueryable().Where($@"object.Equals({ValueProperty},@0)", v).FirstOrDefault();
+                        if (si == null)
+                        {
+                            selectedItems.Add(item);
+                        }
+                        else
+                        {
+                            selectedItems.Remove(si);
+                        }
+                    }
+                    else
+                    {
+                        UpdateSelectedItems(item);
+                    }
                 }
                 else
                 {
-                    selectedItems.Remove(item);
+                    UpdateSelectedItems(item);
                 }
 
                 if (!string.IsNullOrEmpty(ValueProperty))
@@ -884,6 +907,18 @@ namespace Radzen
                 await Change.InvokeAsync(internalValue);
             }
             StateHasChanged();
+        }
+
+        internal void UpdateSelectedItems(object item)
+        {
+            if (selectedItems.IndexOf(item) == -1)
+            {
+                selectedItems.Add(item);
+            }
+            else
+            {
+                selectedItems.Remove(item);
+            }
         }
 
         /// <summary>
@@ -918,12 +953,12 @@ namespace Radzen
                 }
                 else
                 {
-                    var values = value as dynamic;
+                    var values = value as IEnumerable;
                     if (values != null)
                     {
                         if (!string.IsNullOrEmpty(ValueProperty))
                         {
-                            foreach (object v in values)
+                            foreach (object v in values.ToDynamicList())
                             {
                                 dynamic item;
 
@@ -936,7 +971,7 @@ namespace Radzen
                                     item = View.AsQueryable().Where($@"{ValueProperty} == @0", v).FirstOrDefault();
                                 }
 
-                                if (!object.Equals(item, null) && selectedItems.IndexOf(item) == -1)
+                                if (!object.Equals(item, null) && (LoadData.HasDelegate ? !IsItemSelectedByValue(v) : selectedItems.IndexOf(item) == -1))
                                 {
                                     selectedItems.Add(item);
                                 }
@@ -954,6 +989,12 @@ namespace Radzen
             {
                 selectedItem = null;
             }
+        }
+
+        internal bool IsItemSelectedByValue(object v)
+        {
+            return ((Multiple ? selectedItems : selectedItem != null ? new[] { selectedItem } : Enumerable.Empty<object>()) ?? Enumerable.Empty<object>())
+                .AsQueryable().Where($@"object.Equals({ValueProperty},@0)", v).Any();
         }
 
         /// <inheritdoc />

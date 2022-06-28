@@ -452,9 +452,17 @@ namespace Radzen
         /// </summary>
         Top,
         /// <summary>
+        /// The RadzenTabs titles are displayed at the top right side of the component.
+        /// </summary>
+        TopRight,
+        /// <summary>
         /// The RadzenTabs titles are displayed at the bottom of the component.
         /// </summary>
         Bottom,
+        /// <summary>
+        /// The RadzenTabs titles are displayed at the bottom right side of the component.
+        /// </summary>
+        BottomRight,
         /// <summary>
         /// The RadzenTabs titles are displayed at the left side of the component.
         /// </summary>
@@ -1382,6 +1390,26 @@ namespace Radzen
         public SeriesPoint Point { get; set; }
     }
 
+    /// <summary>
+    /// Supplies information about a <see cref="RadzenChart.LegendClick" /> event that is being raised.
+    /// </summary>
+    public class LegendClickEventArgs
+    {
+        /// <summary>
+        /// Gets the data at the clicked location.
+        /// </summary>
+        public object Data { get; set; }
+        /// <summary>
+        /// Gets the title of the clicked series. Determined by <see cref="CartesianSeries{TItem}.Title" />.
+        /// </summary>
+        /// <value>The title.</value>
+        public string Title { get; set; }
+        /// <summary>
+        /// Gets the visibility of the clicked legend. Determined by <see cref="CartesianSeries{TItem}.IsVisible" />. Always visible for Pie Charts.
+        /// </summary>
+        /// <value>The visibility.</value>
+        public bool IsVisible { get; set; }
+    }
     /// <summary>
     /// Supplies information about a <see cref="RadzenHtmlEditor.Execute" /> event that is being raised.
     /// </summary>
