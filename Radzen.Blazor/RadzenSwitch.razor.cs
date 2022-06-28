@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Web;
-using System.Threading.Tasks;
-
-namespace Radzen.Blazor
+﻿namespace Radzen.Blazor
 {
     /// <summary>
     /// RadzenSwitch component.
