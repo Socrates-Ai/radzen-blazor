@@ -200,7 +200,7 @@ namespace Radzen.Blazor
             }
         }
 
-        List<IRadzenFormComponent> components = new List<IRadzenFormComponent>();
+        readonly List<IRadzenFormComponent> components = new List<IRadzenFormComponent>();
 
         /// <inheritdoc />
         public void AddComponent(IRadzenFormComponent component)

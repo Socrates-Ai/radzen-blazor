@@ -95,11 +95,8 @@ namespace Radzen
             }
             set
             {
-                if (_form != value && value != null)
-                {
-                    _form = value;
-                    _form.AddComponent(this);
-                }
+                _form = value;
+                _form?.AddComponent(this);
             }
         }
 
