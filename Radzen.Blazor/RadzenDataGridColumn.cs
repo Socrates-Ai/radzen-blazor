@@ -100,10 +100,10 @@ namespace Radzen.Blazor
             {
                 Grid.AddColumn(this);
 
-                if (!string.IsNullOrEmpty(FilterProperty) || Type == null)
-                {
-                    var property = GetFilterProperty();
+                var property = GetFilterProperty();
 
+                if (!string.IsNullOrEmpty(property) && Type == null)
+                {
                     if (!string.IsNullOrEmpty(property))
                     {
                         _filterPropertyType = PropertyAccess.GetPropertyType(typeof(TItem), property);
@@ -732,7 +732,7 @@ namespace Radzen.Blazor
 
             FilterValue = null;
             SecondFilterValue = null;
-            FilterOperator = default(FilterOperator);
+            FilterOperator = typeof(System.Collections.IEnumerable).IsAssignableFrom(FilterPropertyType) ? FilterOperator.Contains : default(FilterOperator);
             SecondFilterOperator = default(FilterOperator);
             LogicalFilterOperator = default(LogicalFilterOperator);
         }
