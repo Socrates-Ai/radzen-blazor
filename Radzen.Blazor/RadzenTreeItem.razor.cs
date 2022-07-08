@@ -249,7 +249,7 @@ namespace Radzen.Blazor
         {
             if (HasChildren)
             {
-                IEnumerable<object> bottomLayerVales = (IEnumerable<object>) Tree.LowestLevelChildrentDict[Value];
+                IEnumerable<object> bottomLayerVales = (IEnumerable<object>)Tree.LowestLevelChildrentDict[Value];
                 if (value == true)
                 {
                     var layerVales = bottomLayerVales as object[] ?? bottomLayerVales.ToArray();
@@ -306,13 +306,13 @@ namespace Radzen.Blazor
                 {
                     if (value == true)
                     {
-                        var valueWithoutChildren = new[] {Value};
+                        var valueWithoutChildren = new[] { Value };
                         checkedValues = checkedValues.Union(valueWithoutChildren);
                         Tree.SetUncheckedValues(Tree.UncheckedValues.Except(valueWithoutChildren));
                     }
                     else
                     {
-                        var valueWithoutChildren = new[] {Value};
+                        var valueWithoutChildren = new[] { Value };
                         checkedValues = checkedValues.Except(valueWithoutChildren);
                         Tree.SetUncheckedValues(valueWithoutChildren.Union(Tree.UncheckedValues));
                     }
@@ -323,66 +323,58 @@ namespace Radzen.Blazor
                     checkedValues = UpdateCheckedValuesWithParents(checkedValues, value);
                 }
 
+                var test = IsChecked();
                 await Tree.SetCheckedValues(checkedValues);
             }
         }
 
         bool? IsChecked()
         {
-            IEnumerable<object> checkedVals;
-            if (string.IsNullOrEmpty(Tree.ChildrenPropertiesChain))
+            if (!string.IsNullOrEmpty(Tree.ChildrenPropertiesChain) && HasChildren)
             {
-                checkedVals = GetCheckedValues();
-                if (HasChildren && IsOneChildUnchecked() && IsOneChildChecked())
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                checkedVals = Tree.CheckedBottomLayerValues;
-                if (HasChildren)
-                {
-                    return EvaluateBottomLayer();
-                }
+                return EvaluateBottomLayer();
             }
 
-            bool isInCheckedValues = checkedVals.Any(x => x.Equals(Value));
-            return isInCheckedValues;
+            var checkedValues = GetCheckedValues();
+            if (Tree?.AllowCheckParents == true && HasChildren && IsOneChildUnchecked() && IsOneChildChecked())
+            {
+                return null;
+            }
+
+            return checkedValues.Contains(Value);
         }
 
         private bool? EvaluateBottomLayer()
         {
             if (Tree.LowestLevelChildrentDict != null && Tree.LowestLevelChildrentDict.Count != 0)
-                if (Tree?.AllowCheckParents == true && HasChildren && IsOneChildUnchecked() && IsOneChildChecked())
+            {
+                IEnumerable bottomLayer = Tree.LowestLevelChildrentDict[Value];
+                var checkedValues = Tree.CheckedBottomLayerValues.ToArray();
+
+                int isChecked = 0;
+                int isNotChecked = 0;
+                foreach (object bottomLayerItem in bottomLayer)
                 {
-                    IEnumerable bottomLayer = Tree.LowestLevelChildrentDict[Value];
-                    var checkedValues = Tree.CheckedBottomLayerValues.ToArray();
-
-                    int isChecked = 0;
-                    int isNotChecked = 0;
-                    foreach (object bottomLayerItem in bottomLayer)
+                    if (checkedValues.Any(x => bottomLayerItem.Equals(x)))
                     {
-                        if (checkedValues.Any(x => bottomLayerItem.Equals(x)))
-                        {
-                            isChecked++;
-                        }
-                        else
-                        {
-                            isNotChecked++;
-                        }
+                        isChecked++;
                     }
-
-                    if (isChecked > 0 && isNotChecked > 0)
+                    else
                     {
-                        return null;
-                    }
-
-                    if (isChecked > 0 && isNotChecked == 0)
-                    {
-                        return true;
+                        isNotChecked++;
                     }
                 }
+
+                if (isChecked > 0 && isNotChecked > 0)
+                {
+                    return null;
+                }
+
+                if (isChecked > 0 && isNotChecked == 0)
+                {
+                    return true;
+                }
+            }
 
             return false;
         }
@@ -401,7 +393,7 @@ namespace Radzen.Blazor
 
         IEnumerable<object> GetValueAndAllChildValues()
         {
-            return new object[] {Value}.Concat(GetAllChildValues());
+            return new object[] { Value }.Concat(GetAllChildValues());
         }
 
         bool AreAllChildrenChecked(Func<object, bool> predicate = null)
@@ -435,11 +427,11 @@ namespace Radzen.Blazor
             {
                 if (value == false && p.AreAllChildrenUnchecked(i => !object.Equals(i, Value)))
                 {
-                    checkedValues = checkedValues.Except(new object[] {p.Value});
+                    checkedValues = checkedValues.Except(new object[] { p.Value });
                 }
                 else if (value == true && p.AreAllChildrenChecked(i => !object.Equals(i, Value)))
                 {
-                    checkedValues = checkedValues.Union(new object[] {p.Value});
+                    checkedValues = checkedValues.Union(new object[] { p.Value });
                 }
 
                 p = p.ParentItem;
