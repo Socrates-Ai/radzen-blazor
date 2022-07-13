@@ -492,7 +492,21 @@ namespace Radzen.Blazor
                     builder.AddAttribute(4, "oninput", EventCallback.Factory.Create<ChangeEventArgs>(this, args =>
                     {
                         var value = $"{args.Value}";
-                        column.SetFilterValue(!string.IsNullOrWhiteSpace(value) ? Convert.ChangeType(value, Nullable.GetUnderlyingType(type)) : null, isFirst);
+                        object filterValue = null;
+
+                        if (!string.IsNullOrWhiteSpace(value))
+                        {
+                            try
+                            {
+                                filterValue = Convert.ChangeType(value, Nullable.GetUnderlyingType(type));
+                            }
+                            catch (Exception)
+                            {
+                                filterValue = null;
+                            }
+                        }
+
+                        column.SetFilterValue(filterValue, isFirst);
                     }));
                 }
                 else if (FilterMode == FilterMode.SimpleWithMenu)
@@ -599,13 +613,6 @@ namespace Radzen.Blazor
         [Parameter]
         public EventCallback<DataGridColumnFilterEventArgs<TItem>> Filter { get; set; }
 
-        /// <summary>
-        /// Gets or sets the column filter cleared callback.
-        /// </summary>
-        /// <value>The column filter callback.</value>
-        [Parameter]
-        public EventCallback<DataGridColumnFilterEventArgs<TItem>> FilterCleared { get; set; }
-
         internal async Task ClearFilter(RadzenDataGridColumn<TItem> column, bool closePopup = false)
         {
             if (closePopup)
@@ -618,7 +625,7 @@ namespace Radzen.Blazor
             skip = 0;
             CurrentPage = 0;
 
-            await FilterCleared.InvokeAsync(new DataGridColumnFilterEventArgs<TItem>() 
+            await Filter.InvokeAsync(new DataGridColumnFilterEventArgs<TItem>() 
             { 
                 Column = column, 
                 FilterValue = column.GetFilterValue(),
