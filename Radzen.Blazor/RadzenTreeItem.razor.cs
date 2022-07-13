@@ -334,7 +334,12 @@ namespace Radzen.Blazor
             {
                 return EvaluateBottomLayer();
             }
-
+            
+            if (!string.IsNullOrEmpty(Tree.ChildrenPropertiesChain)  && !HasChildren)
+            {
+                return Tree.CheckedBottomLayerValues.Contains(Value);
+            }
+            
             var checkedValues = GetCheckedValues();
             if (Tree?.AllowCheckParents == true && HasChildren && IsOneChildUnchecked() && IsOneChildChecked())
             {
