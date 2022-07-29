@@ -364,14 +364,21 @@ namespace Radzen
         /// <param name="forceReload">if set to <c>true</c> [force reload].</param>
         public async Task FirstPage(bool forceReload = false)
         {
+            var shouldReload = forceReload && CurrentPage == 0;
+
             if (topPager != null)
             {
-                await topPager.FirstPage(forceReload);
+                await topPager.FirstPage();
             }
 
             if (bottomPager != null)
             {
-                await bottomPager.FirstPage(forceReload);
+                await bottomPager.FirstPage();
+            }
+
+            if (shouldReload)
+            {
+                await InvokeAsync(Reload);
             }
         }
 

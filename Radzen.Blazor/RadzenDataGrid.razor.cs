@@ -202,7 +202,11 @@ namespace Radzen.Blazor
         /// <value><c>true</c> if DataGrid data cells will follow the header cells structure in composite columns; otherwise, <c>false</c>.</value>
         [Parameter]
         public bool AllowCompositeDataCells { get; set; } = false;
-
+        /// <summary>
+        /// Gets or sets a value indicating whether DataGrid data body show empty message.
+        /// </summary>
+        [Parameter]
+        public bool ShowEmptyMessage { get; set; } = true;
         /// <summary>
         /// Gets or sets a value indicating whether DataGrid is responsive.
         /// </summary>
@@ -613,6 +617,13 @@ namespace Radzen.Blazor
         [Parameter]
         public EventCallback<DataGridColumnFilterEventArgs<TItem>> Filter { get; set; }
 
+        /// <summary>
+        /// Gets or sets the column filter cleared callback.
+        /// </summary>
+        /// <value>The column filter callback.</value>
+        [Parameter]
+        public EventCallback<DataGridColumnFilterEventArgs<TItem>> FilterCleared { get; set; }
+
         internal async Task ClearFilter(RadzenDataGridColumn<TItem> column, bool closePopup = false)
         {
             if (closePopup)
@@ -625,7 +636,7 @@ namespace Radzen.Blazor
             skip = 0;
             CurrentPage = 0;
 
-            await Filter.InvokeAsync(new DataGridColumnFilterEventArgs<TItem>() 
+            await FilterCleared.InvokeAsync(new DataGridColumnFilterEventArgs<TItem>() 
             { 
                 Column = column, 
                 FilterValue = column.GetFilterValue(),
@@ -1440,6 +1451,8 @@ namespace Radzen.Blazor
             }
         }
 
+        IEnumerable<FilterDescriptor> filters = Enumerable.Empty<FilterDescriptor>();
+
         async Task InvokeLoadData(int start, int top)
         {
             var orderBy = GetOrderBy();
@@ -1451,21 +1464,21 @@ namespace Radzen.Blazor
             var filterString = allColumns.ToList().ToFilterString<TItem>();
             Query.Filter = filterString;
 
+            filters = allColumns.ToList().Where(c => c.Filterable && c.GetVisible() && (c.GetFilterValue() != null
+                    || c.GetFilterOperator() == FilterOperator.IsNotNull || c.GetFilterOperator() == FilterOperator.IsNull
+                    || c.GetFilterOperator() == FilterOperator.IsEmpty | c.GetFilterOperator() == FilterOperator.IsNotEmpty))
+                .Select(c => new FilterDescriptor()
+                {
+                    Property = c.GetFilterProperty(),
+                    FilterValue = c.GetFilterValue(),
+                    FilterOperator = c.GetFilterOperator(),
+                    SecondFilterValue = c.GetSecondFilterValue(),
+                    SecondFilterOperator = c.GetSecondFilterOperator(),
+                    LogicalFilterOperator = c.GetLogicalFilterOperator()
+                }).ToList();
+
             if (LoadData.HasDelegate)
             {
-                var filters = allColumns.ToList().Where(c => c.Filterable && c.GetVisible() && (c.GetFilterValue() != null
-                        || c.GetFilterOperator() == FilterOperator.IsNotNull || c.GetFilterOperator() == FilterOperator.IsNull
-                        || c.GetFilterOperator() == FilterOperator.IsEmpty | c.GetFilterOperator() == FilterOperator.IsNotEmpty))
-                    .Select(c => new FilterDescriptor()
-                    {
-                            Property = c.GetFilterProperty(),
-                            FilterValue = c.GetFilterValue(),
-                            FilterOperator = c.GetFilterOperator(),
-                            SecondFilterValue = c.GetSecondFilterValue(),
-                            SecondFilterOperator = c.GetSecondFilterOperator(),
-                            LogicalFilterOperator = c.GetLogicalFilterOperator()
-                    });
-
                 await LoadData.InvokeAsync(new Radzen.LoadDataArgs()
                 {
                     Skip = start,

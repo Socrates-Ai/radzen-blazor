@@ -54,9 +54,6 @@ namespace Radzen.Blazor
             return GetClassList("rz-fileupload").ToString();
         }
 
-        string name = "";
-        string size = "";
-
         /// <summary>
         /// Gets file input reference.
         /// </summary>
@@ -120,8 +117,12 @@ namespace Radzen.Blazor
         public async System.Threading.Tasks.Task OnChange(IEnumerable<PreviewFileInfo> files)
         {
             var file = files.FirstOrDefault();
-            size = $"{file.Size}";
-            name = file.Name;
+
+            FileSize = file.Size;
+            await FileSizeChanged.InvokeAsync(FileSize);
+
+            FileName = file.Name;
+            await FileNameChanged.InvokeAsync(FileName);
 
             await OnChange();
         }
@@ -202,10 +203,18 @@ namespace Radzen.Blazor
         async System.Threading.Tasks.Task Remove(EventArgs args)
         {
             Value = default(TValue);
+            FileSize = null;
+            FileName = null;
+
+            await JSRuntime.InvokeVoidAsync("Radzen.removeFileFromFileInput", fileUpload);
 
             await ValueChanged.InvokeAsync(Value);
             if (FieldIdentifier.FieldName != null) { EditContext?.NotifyFieldChanged(FieldIdentifier); }
             await Change.InvokeAsync(Value);
+
+            await FileSizeChanged.InvokeAsync(FileSize);
+
+            await FileNameChanged.InvokeAsync(FileName);
 
             StateHasChanged();
         }
@@ -244,5 +253,33 @@ namespace Radzen.Blazor
         /// <value>The image style.</value>
         [Parameter]
         public string ImageStyle { get; set; } = "width:100px;";
+
+        /// <summary>
+        /// Gets or sets the image file name.
+        /// </summary>
+        /// <value>The image file name.</value>
+        [Parameter]
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the FileName changed.
+        /// </summary>
+        /// <value>The FileName changed.</value>
+        [Parameter]
+        public EventCallback<string> FileNameChanged { get; set; }
+
+        /// <summary>
+        /// Gets or sets the image file size.
+        /// </summary>
+        /// <value>The image file size.</value>
+        [Parameter]
+        public long? FileSize { get; set; }
+
+        /// <summary>
+        /// Gets or sets the FileSize changed.
+        /// </summary>
+        /// <value>The FileSize changed.</value>
+        [Parameter]
+        public EventCallback<long?> FileSizeChanged { get; set; }
     }
 }

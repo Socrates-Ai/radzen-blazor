@@ -45,14 +45,14 @@
         }
         else
         {
-            x1 = 0; x2 = Chart.CategoryScale.OutputSize - Chart.CategoryAxis.Padding * 2;
+            x1 = 0; x2 = Chart.CategoryScale.OutputSize;
             y1 = a; y2 = (a + b * x2);
 
             y1 = Math.Min(Math.Max(0, y1), Chart.ValueScale.OutputSize); 
             y2 = Math.Max(Math.Min(Chart.ValueScale.OutputSize, y2), 0);
         }
 
-        var path = $"M{x1} {y1} L{x2} {y2} ";
+        var path = $"M{x1.ToInvariantString()} {y1.ToInvariantString()} L{x2.ToInvariantString()} {y2.ToInvariantString()} ";
 
         return
         @<g>
