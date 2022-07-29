@@ -5,13 +5,8 @@
 {
     <li class="@(DropDown.isSelected(Item) ? "rz-multiselect-item  rz-state-highlight" : "rz-multiselect-item ")"
         aria-label="@PropertyAccess.GetItemOrValueFromProperty(Item, DropDown.TextProperty)" style="display: block;white-space: nowrap;"
-<<<<<<< HEAD
-        @onmousedown:preventDefault @onmousedown="@(() => { if(DropDown.LoadData.HasDelegate && !string.IsNullOrEmpty(DropDown.searchText)) { DropDown.OnSelectItemInternal(Item); } })"
-        @onclick:preventDefault @onclick="@(() => { if(!(DropDown.LoadData.HasDelegate && !string.IsNullOrEmpty(DropDown.searchText))) { DropDown.OnSelectItemInternal(Item); } })">
-=======
-    @onmousedown:preventDefault @onmousedown="@SelectItem"
+        @onmousedown:preventDefault @onmousedown="@SelectItem"
         @onclick:preventDefault @onclick="@SelectItem">
->>>>>>> a3a8ad87d356f0d637d86a64e104a1b22bae2168
         <div class="rz-chkbox ">
             <div class="@(DropDown.isSelected(Item) ? "rz-chkbox-box    rz-state-active" : "rz-chkbox-box   ")">
                 <span class="@(DropDown.isSelected(Item) ? "rz-chkbox-icon  rzi rzi-check" : "rz-chkbox-icon ")"></span>
@@ -46,7 +41,9 @@ else
         </span>
     </li>
 }
+
 @code {
+
     [Parameter]
     public RadzenDropDown<TValue> DropDown { get; set; }
 
@@ -62,4 +59,5 @@ else
             await DropDown.OnSelectItemInternal(Item);
         }
     }
+
 }
