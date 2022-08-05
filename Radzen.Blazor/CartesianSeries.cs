@@ -5,8 +5,6 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using Radzen.Blazor.Rendering;
 using System.Threading.Tasks;
-using System.Collections;
-using Microsoft.AspNetCore.Components.Rendering;
 
 namespace Radzen.Blazor
 {
