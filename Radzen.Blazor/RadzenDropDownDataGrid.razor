@@ -1,4 +1,9 @@
 ﻿@using Radzen
+@using System.Collections
+@using System.Collections.Generic
+@using System.Linq.Dynamic.Core
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
 @typeparam TValue
 @inherits DropDownBase<TValue>
 
@@ -8,7 +13,7 @@
          style="@Style" tabindex="@TabIndex" id="@GetId()" @onclick="@(args => OpenPopup("ArrowDown", false, true))" @onkeydown="@((args) => OnKeyPress(args))">
         <div class="rz-helper-hidden-accessible">
             <input tabindex="-1" disabled="@Disabled" style="width:100%" aria-haspopup="listbox" readonly="" type="text"
-                   name="@Name" aria-label="@(!Multiple && internalValue != null ? PropertyAccess.GetItemOrValueFromProperty(internalValue, TextProperty) : "")" />
+                   name="@Name" aria-label="@(!Multiple && internalValue != null ? PropertyAccess.GetItemOrValueFromProperty(internalValue, TextProperty) : "")"/>
 
         </div>
 
@@ -84,7 +89,7 @@
                 {
                     <div class="rz-lookup-search">
                         <input id="@SearchID" @ref="@search" tabindex="-1" placeholder="@SearchText"
-                               @onchange="@((args) => OnFilter(args))" @onkeydown="@((args) => OnFilterKeyPress(args))" value="@searchText" style="@(ShowSearch ? "" : "margin-right:0px;")" />
+                               @onchange="@((args) => OnFilter(args))" @onkeydown="@((args) => OnFilterKeyPress(args))" value="@searchText" style="@(ShowSearch ? "" : "margin-right:0px;")"/>
                         @if (ShowSearch)
                         {
                             <button class="rz-button rz-button-md    btn-primary rz-button-icon-only" type="button" title="">
@@ -122,7 +127,7 @@
                                 }
                                 else
                                 {
-                                    <RadzenDataGridColumn TItem="object" Property="@TextProperty" Title="@TextProperty" Type="typeof(string)" />
+                                    <RadzenDataGridColumn TItem="object" Property="@TextProperty" Title="@TextProperty" Type="typeof(string)"/>
                                 }
                             </Columns>
                             <EmptyTemplate>

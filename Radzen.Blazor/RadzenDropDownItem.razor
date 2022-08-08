@@ -1,12 +1,15 @@
 ﻿@using Radzen
+@using System.Linq.Dynamic.Core
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
 @typeparam TValue
 
 @if (DropDown.Multiple)
 {
     <li class="@GetComponentCssClass("rz-multiselect")"
         aria-label="@PropertyAccess.GetItemOrValueFromProperty(Item, DropDown.TextProperty)" style="display: block;white-space: nowrap;"
-        @onmousedown:preventDefault @onmousedown="@SelectItem"
-        @onclick:preventDefault @onclick="@SelectItem">
+    @onmousedown:preventDefault @onmousedown="args=>SelectItem(args,false)"
+        @onclick:preventDefault @onclick="args=>SelectItem(args,true)">
         <div class="rz-chkbox ">
             <div class="@(DropDown.isSelected(Item) ? "rz-chkbox-box    rz-state-active" : "rz-chkbox-box   ") @(Disabled ? " rz-state-disabled  " : "")">
                 <span class="@(DropDown.isSelected(Item) ? "rz-chkbox-icon  rzi rzi-check" : "rz-chkbox-icon ")"></span>
@@ -26,9 +29,9 @@
 }
 else
 {
-    <li role="option" class="@(DropDown.isSelected(Item) ? "rz-dropdown-item  rz-state-highlight" : "rz-dropdown-item ")" aria-label=">@PropertyAccess.GetItemOrValueFromProperty(Item, DropDown.TextProperty)"
-        @onmousedown:preventDefault @onmousedown="@SelectItem"
-        @onclick:preventDefault @onclick="@SelectItem">
+    <li role="option" class="@GetComponentCssClass("rz-dropdown")" aria-label=">@PropertyAccess.GetItemOrValueFromProperty(Item, DropDown.TextProperty)"
+    @onmousedown:preventDefault @onmousedown="args=>SelectItem(args,false)"
+    @onclick:preventDefault @onclick="args=>SelectItem(args,true)">
         <span>
             @if (DropDown.Template != null)
             {
@@ -41,9 +44,7 @@ else
        </span>
     </li>
 }
-
 @code {
-
     [Parameter]
     public RadzenDropDown<TValue> DropDown { get; set; }
 
