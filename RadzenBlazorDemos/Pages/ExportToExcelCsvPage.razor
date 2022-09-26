@@ -4,15 +4,18 @@
 @using RadzenBlazorDemos.Models.Northwind
 @using Microsoft.EntityFrameworkCore
 
-@inject NorthwindContext dbContext
+@inherits DbContextPage
 @inject NorthwindService service
 
-<h1>Export to Excel and CSV</h1>
-
-<p>This page demonstrates how to export a Radzen Blazor DataGrid to Excel and CSV.</p>
+<RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1" Class="my-4">
+    Export to Excel and CSV
+</RadzenText>
+<RadzenText TextStyle="TextStyle.Body1" Class="my-4">
+    This page demonstrates how to export a Radzen Blazor DataGrid to Excel and CSV.
+</RadzenText>
 
 <RadzenExample Name="DataGrid" Source="ExportToExcelCsv" Heading="false">
-    <RadzenButton Text="Export XLS" Icon="grid_on" Click="@(args => Export("excel"))" Class="mb-4 mr-2" /><RadzenButton Text="Export CSV" Icon="wrap_text" Click="@(args => Export("csv"))" Class="mb-4" />
+    <RadzenButton Text="Export XLS" Icon="grid_on" Click="@(args => Export("excel"))" Class="mb-4 me-2" /><RadzenButton Text="Export CSV" Icon="wrap_text" Click="@(args => Export("csv"))" Class="mb-4" />
     <RadzenDataGrid @ref="grid" AllowColumnPicking="true" AllowFiltering="true" AllowPaging="true" AllowSorting="true" Data="@orderDetails" TItem="OrderDetail">
         <Columns>
             <RadzenDataGridColumn TItem="OrderDetail" Property="OrderID" Title="OrderID" />
@@ -35,6 +38,8 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
+
         orderDetails = dbContext.OrderDetails.ToList();
     }
 

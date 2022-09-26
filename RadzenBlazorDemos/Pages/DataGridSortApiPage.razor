@@ -4,11 +4,14 @@
 @using RadzenBlazorDemos.Models.Northwind
 @using Microsoft.EntityFrameworkCore
 
-@inject NorthwindContext dbContext
+@inherits DbContextPage
 
-<h1>DataGrid <strong>Sort API</strong></h1>
-
-<p>Set the initial sort order of your RadzenDataGrid via the <code>SortOrder</code> column property.</p>
+<RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1" Class="my-4">
+    DataGrid <strong>Sort API</strong>
+</RadzenText>
+<RadzenText TextStyle="TextStyle.Body1" Class="my-4">
+    Set the initial sort order of your RadzenDataGrid via the <code>SortOrder</code> column property.
+</RadzenText>
 
 <RadzenExample Name="DataGrid" Source="DataGridSortApi" Heading="false">
     <RadzenDataGrid AllowColumnResize="true" PageSize="5" AllowPaging="true" 
@@ -27,6 +30,8 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
+
         employees = dbContext.Employees;
     }
 

@@ -11,7 +11,7 @@
   <div class="container-fluid stage light">
     <div class="container">
       <div class="row">
-        <div class="col-xs-12 col-sm-4 text-center text-sm-left">
+        <div class="col-xs-12 col-sm-4 text-center text-sm-start">
           <a href="/" title="Radzen" class="logo">
             <svg width="159" height="48" viewBox="0 0 159 48" xmlns="http://www.w3.org/2000/svg">
               <title>Radzen</title>
@@ -20,7 +20,7 @@
             </svg>
           </a>
         </div>
-        <div class="col-sm-8 d-none d-sm-block text-right nav-links align-items-center">
+        <div class="col-sm-8 d-none d-sm-block text-end nav-links align-items-center">
           <a href="/docs/" title="Radzen Blazor Components Documentation" target="_blank">Documentation</a>
           <a href="https://www.radzen.com/" title="Create .NET Core web applications fast & easy" target="_blank">About Radzen</a>
           <a href="https://github.com/radzenhq/radzen-blazor" title="GitHub" target="_blank">
@@ -51,13 +51,17 @@
             </div>
             <div class="col-md-10 logos">
               <img src="images/microsoft.svg" />
+              <img src="images/porsche.svg" style="height: 70px;" />
               <img class="square" src="images/nasa.svg" />
               <img src="images/allianz.svg" />
               <img class="square" src="images/dell.svg" />
               <img src="images/accenture.svg" />
               <img src="images/eurobank.svg" />
-              <img class="square" src="images/konica.svg" />
-              <img src="images/deloitte.svg" />
+              <img src="images/nokia.svg" style="height: 20px;" />
+              <img src="images/konica-minolta.svg" style="height: 40px;" />
+              <img src="images/siemens.svg" style="height: 20px;" />
+              <img src="images/deloitte.svg" style="height: 26px;" />
+              <img src="images/DHL.svg" />
             </div>
           </div>
         </div>
@@ -97,58 +101,77 @@
 
           <h2 class="subtitle">Most Popular Components</h2>
 
-          <div class="row popular-components">
-            <a href="/datagrid">
-              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M16 0H0V16H16V0ZM15 1H11V5H15V1ZM15 6H11V10H15V6ZM15 11H11V15H15V11ZM10 11V15H6V11H10ZM10 6V10H6V6H10ZM10 1V5H6V1H10ZM5 1H1V5H5V1ZM5 6H1V10H5V6ZM5 11H1V15H5V11Z" fill="currentColor"/>
-              </svg>
-              DataGrid
-            </a>
-            <a href="/scheduler">
-              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M3 0H4V2H12V0H13V2H16V16H0V2H3V0ZM12 3V4H13V3H15V15H1V3H3V4H4V3H12ZM3 13V6H7V13H3ZM4 12V7H6V12H4ZM9 6H13V10H9V6ZM10 9V7H12V9H10Z" fill="currentColor"/>
-              </svg>
-              Scheduler
-            </a>
-            <a href="/dropdown">
-              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H13V1H0V0ZM14 0H16V1H14V0ZM0 3H16V16H0V3ZM1 4H15V15H1V4ZM14 5H13V10H14V5ZM11 6H3V7H11V6ZM11 9H3V10H11V9ZM3 12H11V13H3V12Z" fill="currentColor"/>
-              </svg>
-              DropDown
-            </a>
-            <a href="/dialog">
-              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V16H16V0H0ZM15 1H1V15H15V1ZM8 3H3V4H8V3ZM13 7V6H3V7H13ZM13 12H10V13H13V12ZM3 8H13V9H3V8ZM12 3H13V4H12V3ZM9 12H6V13H9V12Z" fill="currentColor"/>
-              </svg>
-              Dialog
-            </a>
-            <a href="/datepicker">
-              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M0 13V3H16V13H0ZM1 4H15V12H1V4ZM6.89778 10H8.05248L10.3619 6H9.20718L6.89778 10ZM6 9H3V10H6V9ZM10 9H13V10H10V9Z" fill="currentColor"/>
-              </svg>
-              DatePicker
-            </a>
+          <div class="row">
+            <div class="col popular-components">
+              <a href="/datagrid">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M16 0H0V16H16V0ZM15 1H11V5H15V1ZM15 6H11V10H15V6ZM15 11H11V15H15V11ZM10 11V15H6V11H10ZM10 6V10H6V6H10ZM10 1V5H6V1H10ZM5 1H1V5H5V1ZM5 6H1V10H5V6ZM5 11H1V15H5V11Z" fill="currentColor"/>
+                </svg>
+                DataGrid
+              </a>
+            </div>
+            <div class="col popular-components">
+              <a href="/scheduler">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M3 0H4V2H12V0H13V2H16V16H0V2H3V0ZM12 3V4H13V3H15V15H1V3H3V4H4V3H12ZM3 13V6H7V13H3ZM4 12V7H6V12H4ZM9 6H13V10H9V6ZM10 9V7H12V9H10Z" fill="currentColor"/>
+                </svg>
+                Scheduler
+              </a>
+            </div>
+            <div class="col popular-components">
+              <a href="/dropdown">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0H13V1H0V0ZM14 0H16V1H14V0ZM0 3H16V16H0V3ZM1 4H15V15H1V4ZM14 5H13V10H14V5ZM11 6H3V7H11V6ZM11 9H3V10H11V9ZM3 12H11V13H3V12Z" fill="currentColor"/>
+                </svg>
+                DropDown
+              </a>
+            </div>
+            <div class="col popular-components">
+              <a href="/dialog">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M0 0V16H16V0H0ZM15 1H1V15H15V1ZM8 3H3V4H8V3ZM13 7V6H3V7H13ZM13 12H10V13H13V12ZM3 8H13V9H3V8ZM12 3H13V4H12V3ZM9 12H6V13H9V12Z" fill="currentColor"/>
+                </svg>
+                Dialog
+              </a>
+            </div>
+            <div class="col popular-components">
+              <a href="/datepicker">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="component-icon">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M0 13V3H16V13H0ZM1 4H15V12H1V4ZM6.89778 10H8.05248L10.3619 6H9.20718L6.89778 10ZM6 9H3V10H6V9ZM10 9H13V10H10V9Z" fill="currentColor"/>
+                </svg>
+                DatePicker
+              </a>
+            </div>
           </div>
 
           <h2 class="subtitle mb-4">All Components</h2>
 
-          <div class="row all-components text-left">
+          <div class="row all-components text-start">
 
             <div class="col-sm-12 col-md-4">
               <div class="row">
                 <div class="col-sm-6 col-md-12 col-lg-6">
                   <h4>Data</h4>
                   <ul>
-                    <li><a href="/datagrid">DataGrid</a><RadzenBadge Text="Updated" /></li>
-                    <li><a href="/datalist">DataList</a><RadzenBadge Text="Updated" /></li>
-                    <li><a href="/pager">Pager</a><RadzenBadge Text="Updated" /></li>
+                    <li><a href="/datagrid">DataGrid</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
+                    <li><a href="/datalist">DataList</a></li>
+                    <li><a href="/datafilter">DataFilter</a><RadzenBadge Text="New" BadgeStyle="BadgeStyle.Success" /></li>
+                    <li><a href="/pager">Pager</a></li>
                     <li><a href="/scheduler">Scheduler</a></li>
                     <li><a href="/tree">Tree</a></li>
+                  </ul>
+                  <h4>UI Fundamentals</h4>
+                  <ul>
+                    <li><a href="/colors">Colors</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
+                    <li><a href="/typography">Typography</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
+                    <li><a href="/icon">Icons</a></li>
+                    <li><a href="/borders">Borders</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
+                    <li><a href="/shadows">Shadows</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
+                    <li><a href="/ripple">Ripple</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
                   </ul>
                   <h4>Images</h4>
                   <ul>
                     <li><a href="/gravatar">Gravatar</a></li>
-                    <li><a href="/icon">Icon</a></li>
                     <li><a href="/image">Image</a></li>
                   </ul>
                 </div>
@@ -157,12 +180,12 @@
                   <h4>Layout & Navigation</h4>
                   <ul>
                     <li><a href="/accordion">Accordion</a></li>
-                    <li><a href="/breadcrumb">BreadCrumb</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
-                    <li><a href="/card">Card</a></li>
+                    <li><a href="/breadcrumb">BreadCrumb</a></li>
+                    <li><a href="/card">Card</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                     <li><a href="/contextmenu">ContextMenu</a></li>
                     <li><a href="/dialog">Dialog</a></li>
                     <li><a href="/link">Link</a></li>
-                    <li><a href="/login">Login</a></li>
+                    <li><a href="/login">Login</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                     <li><a href="/menu">Menu</a></li>
                     <li><a href="/panel">Panel</a></li>
                     <li><a href="/panelmenu">PanelMenu</a></li>
@@ -181,12 +204,12 @@
                 <div class="col-sm-6 col-md-12 col-lg-6">
                   <ul>
                     <li><a href="/autocomplete">AutoComplete</a></li>
-                    <li><a href="/button">Button</a></li>
+                    <li><a href="/button">Button</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                     <li><a href="/checkbox">CheckBox</a></li>
                     <li><a href="/checkboxlist">CheckBoxList</a></li>
                     <li><a href="/colorpicker">ColorPicker</a></li>
                     <li><a href="/datepicker">DatePicker</a></li>
-                    <li><a href="/dropdown">DropDown<RadzenBadge Text="Updated" /></a></li>
+                    <li><a href="/dropdown">DropDown</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                     <li><a href="/dropdown-datagrid">DropDownDataGrid</a></li>
                     <li><a href="/fieldset">Fieldset</a></li>
                     <li><a href="/fileinput">FileInput</a></li>
@@ -201,9 +224,9 @@
                     <li><a href="/password">Password</a></li>
                     <li><a href="/radiobuttonlist">RadioButtonList</a></li>
                     <li><a href="/rating">Rating</a></li>
-                    <li><a href="/selectbar">SelectBar</a></li>
+                    <li><a href="/selectbar">SelectBar</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                     <li><a href="/slider">Slider</a></li>
-                    <li><a href="/splitbutton">SplitButton</a></li>
+                    <li><a href="/splitbutton">SplitButton</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                     <li><a href="/switch">Switch</a></li>
                     <li><a href="/templateform">TemplateForm</a></li>
                     <li><a href="/textarea">TextArea</a></li>
@@ -234,9 +257,9 @@
                 <div class="col-sm-6 col-md-12 col-lg-6">
                   <h4>Feedback</h4>
                   <ul>
-                    <li><a href="/badge">Badge</a></li>
+                    <li><a href="/badge">Badge</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                     <li><a href="/notification">Notification</a></li>
-                    <li><a href="/progressbar">ProgressBar</a></li>
+                    <li><a href="/progressbar">ProgressBar</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                     <li><a href="/tooltip">Tooltip</a></li>
                   </ul>
                   <h4>Validators</h4>

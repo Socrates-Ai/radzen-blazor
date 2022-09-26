@@ -1034,6 +1034,132 @@ namespace Radzen
         }
 
         /// <summary>
+        /// Wheres the specified filters.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="dataFilter">The DataFilter.</param>
+        /// <returns>IQueryable&lt;T&gt;.</returns>
+        public static IQueryable<T> Where<T>(this IQueryable<T> source, RadzenDataFilter<T> dataFilter)
+        {
+            Func<CompositeFilterDescriptor, bool> canFilter = (c) => dataFilter.properties.Where(col => col.Property == c.Property).FirstOrDefault()?.FilterPropertyType != null &&
+               (!(c.FilterValue == null || c.FilterValue as string == string.Empty)
+                || c.FilterOperator == FilterOperator.IsNotNull || c.FilterOperator == FilterOperator.IsNull
+                || c.FilterOperator == FilterOperator.IsEmpty || c.FilterOperator == FilterOperator.IsNotEmpty)
+               && c.Property != null;
+
+            if (dataFilter.Filters.Where(canFilter).Any())
+            {
+                var index = 0;
+                var filterExpressions = new List<string>();
+                var filterValues = new List<object[]>();
+
+                foreach (var filter in dataFilter.Filters)
+                {
+                    AddWhereExpression(canFilter, filter, ref filterExpressions, ref filterValues, ref index, dataFilter);
+                }
+
+                return filterExpressions.Any() ?
+                    source.Where(string.Join($" {dataFilter.LogicalFilterOperator.ToString().ToLower()} ", filterExpressions), filterValues.SelectMany(i => i.ToArray()).ToArray())
+                    : source;
+            }
+
+            return source;
+        }
+
+        private static void AddWhereExpression<T>(Func<CompositeFilterDescriptor, bool> canFilter, CompositeFilterDescriptor filter, ref List<string> filterExpressions, ref List<object[]> filterValues, ref int index, RadzenDataFilter<T> dataFilter)
+        {
+            if (filter.Filters != null)
+            {
+                var innerFilterExpressions = new List<string>();
+
+                foreach (var f in filter.Filters)
+                {
+                    AddWhereExpression(canFilter, f, ref innerFilterExpressions, ref filterValues, ref index, dataFilter);
+                }
+
+                if (innerFilterExpressions.Any())
+                {
+                    filterExpressions.Add("(" + string.Join($" {filter.LogicalFilterOperator.ToString().ToLower()} ", innerFilterExpressions) + ")");
+                }
+            }
+            else
+            {
+                var property = PropertyAccess.GetProperty(filter.Property);
+
+                if (property.IndexOf(".") != -1)
+                {
+                    property = $"({property})";
+                }
+
+                var column = dataFilter.properties.Where(c => c.Property == filter.Property).FirstOrDefault();
+                if (column == null) return;
+
+                if (column.FilterPropertyType == typeof(string) &&
+                    !(filter.FilterOperator == FilterOperator.IsNotNull || filter.FilterOperator == FilterOperator.IsNull
+                        || filter.FilterOperator == FilterOperator.IsEmpty || filter.FilterOperator == FilterOperator.IsNotEmpty))
+                {
+                    property = $@"({property} == null ? """" : {property})";
+                }
+
+                string filterCaseSensitivityOperator = column.FilterPropertyType == typeof(string)
+                       && filter.FilterOperator != FilterOperator.IsNotNull && filter.FilterOperator != FilterOperator.IsNull
+                       && filter.FilterOperator != FilterOperator.IsEmpty && filter.FilterOperator != FilterOperator.IsNotEmpty
+                       && dataFilter.FilterCaseSensitivity == FilterCaseSensitivity.CaseInsensitive ? ".ToLower()" : "";
+
+
+                var comparison = LinqFilterOperators[filter.FilterOperator];
+
+                if (comparison == "StartsWith" || comparison == "EndsWith" || comparison == "Contains")
+                {
+                    if (column.FilterPropertyType == typeof(string) && filter.FilterValue == null)
+                    {
+                        filter.FilterValue = "";
+                    }
+
+                    if (IsEnumerable(column.FilterPropertyType) && column.FilterPropertyType != typeof(string) && comparison == "Contains")
+                    {
+                        filterExpressions.Add($@"(@{index}).Contains({property})");
+                        filterValues.Add(new object[] { filter.FilterValue  });
+                    }
+                    else
+                    {
+                        filterExpressions.Add($@"{property}{filterCaseSensitivityOperator}.{comparison}(@{index}{filterCaseSensitivityOperator})");
+                        filterValues.Add(new object[] { filter.FilterValue });
+                    }
+
+                    index++;
+                }
+                else if (comparison == "DoesNotContain")
+                {
+                    if (column.FilterPropertyType == typeof(string) && filter.FilterValue == null)
+                    {
+                        filter.FilterValue = "";
+                    }
+
+                    if (IsEnumerable(column.FilterPropertyType) && column.FilterPropertyType != typeof(string) && comparison == "DoesNotContain")
+                    {
+                        filterExpressions.Add($@"!(@{index}).Contains({property})");
+                        filterValues.Add(new object[] { filter.FilterValue });
+                    }
+                    else
+                    {
+                        filterExpressions.Add($@"!{property}{filterCaseSensitivityOperator}.Contains(@{index}{filterCaseSensitivityOperator})");
+                        filterValues.Add(new object[] { filter.FilterValue });
+                    }
+
+                    index++;
+                }
+                else if (!(IsEnumerable(column.FilterPropertyType) && column.FilterPropertyType != typeof(string)))
+                {
+                    filterExpressions.Add($@"{property}{filterCaseSensitivityOperator} {comparison} @{index}{filterCaseSensitivityOperator}");
+                    filterValues.Add(new object[] { filter.FilterValue });
+                    index++;
+                }
+            }
+        }
+
+        /// <summary>
         /// Ases the o data enumerable.
         /// </summary>
         /// <typeparam name="T"></typeparam>

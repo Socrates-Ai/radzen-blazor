@@ -200,6 +200,7 @@ namespace Radzen
                 AutoFocusFirstElement = options != null ? options.AutoFocusFirstElement : true,
                 CloseDialogOnOverlayClick = options != null ? options.CloseDialogOnOverlayClick : false,
                 CloseDialogOnEsc = options != null ? options.CloseDialogOnEsc : true,
+                CssClass = options != null ? options.CssClass : "",
             });
         }
 
@@ -229,6 +230,9 @@ namespace Radzen
         /// <inheritdoc />
         public void Dispose()
         {
+            reference?.Dispose();
+            reference = null;
+
             UriHelper.LocationChanged -= UriHelper_OnLocationChanged;
         }
 
@@ -257,6 +261,7 @@ namespace Radzen
                 AutoFocusFirstElement = options != null ? options.AutoFocusFirstElement : true,
                 CloseDialogOnOverlayClick = options != null ? options.CloseDialogOnOverlayClick : false,
                 CloseDialogOnEsc = options != null ? options.CloseDialogOnEsc : true,
+                CssClass = options != null ? options.CssClass : "",
             };
 
             await JSRuntime.InvokeAsync<string>("Radzen.openDialog", dialogOptions, Reference);
@@ -377,6 +382,11 @@ namespace Radzen
         /// </summary>
         /// <value><c>true</c> if closeable; otherwise, <c>false</c>.</value>
         public bool CloseDialogOnEsc { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets dialog box custom class
+        /// </summary>
+        public string CssClass { get; set; }
     }
 
     /// <summary>

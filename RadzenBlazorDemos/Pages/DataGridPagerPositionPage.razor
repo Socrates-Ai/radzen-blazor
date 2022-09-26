@@ -4,9 +4,11 @@
 @using RadzenBlazorDemos.Models.Northwind
 @using Microsoft.EntityFrameworkCore
 
-@inject NorthwindContext dbContext
+@inherits DbContextPage
 
-<h1>DataGrid <strong>Pager Position</strong></h1>
+<RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1" Class="my-4">
+    DataGrid <strong>Pager Position</strong>
+</RadzenText>
 
 <RadzenExample Name="DataGrid" Source="DataGridPagerPosition" Heading="false">
     <div style="display: flex; align-items: center; margin-bottom: 16px">
@@ -40,6 +42,8 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
+
         orderDetails = dbContext.OrderDetails;
     }
 }

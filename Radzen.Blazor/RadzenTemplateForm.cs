@@ -23,7 +23,7 @@ namespace Radzen.Blazor
     ///  {
     ///    public string Email { get; set; }
     ///  }
-    ///  
+    ///
     ///  Model model = new Model();
     /// }
     /// </code>
@@ -73,12 +73,12 @@ namespace Radzen.Blazor
         ///   {
         ///    public string Email { get; set; }
         ///  }
-        ///  
+        ///
         ///  Model model = new Model();
         ///
         ///  void OnSubmit(Model value)
         ///  {
-        ///  
+        ///
         ///  }
         /// }
         /// </code>
@@ -117,12 +117,12 @@ namespace Radzen.Blazor
         ///  {
         ///    public string Email { get; set; }
         ///  }
-        ///  
+        ///
         ///  Model model = new Model();
         ///
         ///  void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
         ///  {
-        ///  
+        ///
         ///  }
         /// }
         /// </code>
@@ -237,6 +237,12 @@ namespace Radzen.Blazor
             {
                 EditContext = new EditContext(Data);
             }
+        }
+
+        /// <inheritdoc />
+        protected override string GetComponentCssClass()
+        {
+            return "rz-form";
         }
 
         /// <inheritdoc />

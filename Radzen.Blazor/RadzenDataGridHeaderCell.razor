@@ -2,23 +2,23 @@
 @if (RowIndex == Column.GetLevel())
 {
 <th rowspan="@(Column.GetRowSpan())" colspan="@(Column.GetColSpan())" @attributes="@Attributes" class="@CssClass" scope="col" style="@Column.GetStyle(true, true)" @onmouseup=@(args => Grid.EndColumnReorder(args, ColumnIndex)) >
-    <div @onclick='@((args) => Grid.OnSort(args, Column))' style="width:100%;outline:none;" tabindex="@SortingTabIndex" @onkeydown="OnSortKeyPressed">
+    <div @onclick='@((args) => Grid.OnSort(args, Column))' tabindex="@SortingTabIndex" @onkeydown="OnSortKeyPressed">
         @if (Column.Parent == null && Column.Columns == null && (Grid.AllowColumnReorder && Column.Reorderable || Grid.AllowGrouping && Column.Groupable))
         {
             <span id="@Grid.getColumnResizerId(ColumnIndex)" class="rz-column-drag" 
                     @onclick:preventDefault="true" @onclick:stopPropagation="true"
-                    @onmousedown=@(args => Grid.StartColumnReorder(args, ColumnIndex))>&nbsp;</span>
+                    @onmousedown=@(args => Grid.StartColumnReorder(args, ColumnIndex))></span>
         }
-        <span class="rz-column-title">
+        <span class="rz-column-title" title="@Column.Title">
             @if (Column.HeaderTemplate != null)
             {
-                @Column.HeaderTemplate
+                <span class="rz-column-title-content">@Column.HeaderTemplate</span>
             }
             else
             {
-                @Column.Title
+                <span class="rz-column-title-content">@Column.Title</span>
             }
-        </span>
+        
         @if (Grid.AllowSorting && Column.Sortable)
         {
             @if (Column.GetSortOrder() == SortOrder.Ascending)
@@ -26,7 +26,7 @@
                 <span class="rz-sortable-column-icon rzi-grid-sort rzi-sort rzi-sort-asc"></span>
                 @if(Grid.ShowMultiColumnSortingIndex)
                 {
-                    <span class="rz-column-title" style="padding-left:0px">@getSortIndex()</span>
+                    <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" IsPill=true Text="@getSortIndex()" />
                 }
             }
             else if (Column.GetSortOrder() == SortOrder.Descending)
@@ -34,7 +34,7 @@
                 <span class="rz-sortable-column-icon rzi-grid-sort rzi-sort rzi-sort-desc"></span>
                 @if(Grid.ShowMultiColumnSortingIndex)
                 {
-                    <span class="rz-column-title" style="padding-left:0px">@getSortIndex()</span>
+                    <RadzenBadge BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" IsPill=true Text="@getSortIndex()" />
                 }
             }
             else
@@ -42,6 +42,7 @@
                 <span class="rz-sortable-column-icon rzi-grid-sort rzi-sort"></span>
             }
         }
+        </span>
         @if (Grid.AllowColumnResize && Column.Resizable && Column.Parent == null)
         {
             <div id="@Grid.getColumnResizerId(ColumnIndex)" style="cursor:col-resize;float:right;"
@@ -89,7 +90,7 @@
                                     <RadzenTextBox Value="@($"{Column.GetFilterValue()}")" Change="@(args => Column.SetFilterValue(args))" />
                                 }
 
-                                <RadzenDropDown @onclick:preventDefault="true" TextProperty="Text" ValueProperty="Value" Style="width: 80px"
+                                <RadzenDropDown @onclick:preventDefault="true" TextProperty="Text" ValueProperty="Value" Style="width: 90px"
                                         Data="@(Enum.GetValues(typeof(LogicalFilterOperator)).Cast<LogicalFilterOperator>().Select(t => new { Text = t == LogicalFilterOperator.And ? Grid.AndOperatorText : Grid.OrOperatorText, Value = t }))" TValue="LogicalFilterOperator" Value="@Column.LogicalFilterOperator" Change="@(args => Column.SetLogicalFilterOperator((LogicalFilterOperator)args))" />
 
                                 <RadzenDropDown @onclick:preventDefault="true" Data="@(Column.GetFilterOperators().Select(t => new { Value = Column.GetFilterOperatorText(t), Key = t }))" TextProperty="Value" ValueProperty="Key" TValue="FilterOperator" Value="@Column.GetSecondFilterOperator()" Change="@(args => Column.SetSecondFilterOperator((FilterOperator)args))" />
@@ -106,7 +107,7 @@
                                 else if (PropertyAccess.IsDate(Column.FilterPropertyType))
                                 {
                                     <RadzenDatePicker TValue="@object"
-                                                ShowTime="true" ShowTimeOkButton="true" DateFormat="@Grid.getFilterDateFormat(Column)"
+                                                ShowTime="@Column.ShowTimeForDateTimeFilter()" ShowTimeOkButton="true" DateFormat="@Grid.getFilterDateFormat(Column)"
                                                 Value="@Column.GetSecondFilterValue()" Change="@(args => Column.SetFilterValue(args.Value, false))" />
 
                                 }
@@ -137,7 +138,7 @@ else
     @foreach(var column in Grid.childColumns.Where(c => c.GetVisible() && c.Parent == Column))
     {
         <RadzenDataGridHeaderCell RowIndex="@RowIndex" Grid="@Grid" Column="@column" ColumnIndex="@ColumnIndex" 
-            CssClass="@($"rz-unselectable-text {(Grid.AllowSorting && column.Sortable ? "rz-sortable-column" : "")} {column.HeaderCssClass} {Grid.getFrozenColumnClass(column, Grid.ColumnsCollection.Where(c => c.GetVisible()).ToList())} {(column.Columns != null || column.Parent != null ? "rz-composite-cell" : "")}".Trim())" />
+            CssClass="@($"rz-unselectable-text {(Grid.AllowSorting && column.Sortable ? "rz-sortable-column" : "")} {column.HeaderCssClass} {Grid.getFrozenColumnClass(column, Grid.ColumnsCollection.Where(c => c.GetVisible()).ToList())} {(column.Columns != null || column.Parent != null ? "rz-composite-cell" : "")}{Grid.getColumnAlignClass(column)}".Trim())" />
     }
 }
 @code {
@@ -182,7 +183,7 @@ else
     string getSortIndex()
     {
         var descriptor = Grid.sorts.Where(s => s.Property == Column.GetSortProperty()).FirstOrDefault();
-        return descriptor != null ? $"({Grid.sorts.IndexOf(descriptor) + 1})" : "";
+        return descriptor != null ? $"{Grid.sorts.IndexOf(descriptor) + 1}" : "";
     }
 
     string getColumnPopupID()

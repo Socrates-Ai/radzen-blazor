@@ -321,6 +321,13 @@ namespace Radzen.Blazor
         [Parameter]
         public RenderFragment ChildContent { get; set; }
 
+        /// <summary>
+        /// Gets or sets the render mode.
+        /// </summary>
+        /// <value>The render mode.</value>
+        [Parameter]
+        public PopupRenderMode PopupRenderMode { get; set; } = PopupRenderMode.Initial;
+
         double SaturationHandleLeft { get; set; }
         double HueHandleLeft { get; set; }
         double AlphaHandleLeft { get; set; } = 1;

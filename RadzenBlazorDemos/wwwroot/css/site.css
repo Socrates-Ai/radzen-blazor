@@ -105,24 +105,27 @@ text-decoration: none;
 }
 
 .console-message {
-    margin: 8px 0;
-    padding: 4px 0;
+    margin: 4px 0;
+    padding: 2px 0;
     display: flex;
     align-items: baseline;
-    color: #000000;
-    background: rgba(210,233,255,0.8);
-    border-radius: 4px;
+    color: var(--rz-text-color);
+    background: var(--rz-info-lighter);
+    border-radius: var(--rz-border-radius);
+    font-size: 0.875rem;
 }
 
 .console-message-time {
-    font-size: 12px;
-    padding: 2px 4px;
+    padding: 2px 8px;
+    color: var(--rz-info-dark);
 }
 
 /* next-demos */
 
 body {
     background-color: #F4F5F9;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .stage {
@@ -147,19 +150,22 @@ body {
 
 .next a {
     color: #FF504D;
+    text-decoration: none;
 }
 
 .next a:hover {
-    text-decoration: none;
     color: #FF7371;
+    text-decoration: none;
 }
 
 .dark a {
     color: #FF9C9A;
+    text-decoration: none;
 }
 
 .dark a:hover {
     color: #FF504D;
+    text-decoration: none;
 }
 
 .next h1,
@@ -228,10 +234,21 @@ body {
     color: #050A23;
     margin: .5rem 0 0 2.5rem;
     transition: all 0.3s;
+    text-decoration: none;
 }
 
 .nav-links a:hover {
     color: #FF504D;
+    text-decoration: none;
+}
+
+#popup-themes {
+    width: 300px !important;
+    height: 400px;
+}
+
+#popup-themes .rz-dropdown-items-wrapper {
+    max-height: 400px !important;
 }
 
 /* CTA Buttons */
@@ -293,7 +310,7 @@ body {
 
 /* Customer Logos */
 
-.customers {
+.row.customers {
     margin-top: 5rem;
     margin-bottom: 1rem;
     border-radius: .75rem;
@@ -301,7 +318,7 @@ body {
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.06);
 }
 
-.customers h3 {
+.row.customers h3 {
     font-size: 1rem;
     font-weight: 300;
     letter-spacing: 0.1em;
@@ -310,21 +327,22 @@ body {
     margin: 2rem 0;
 }
 
-.logos {
-    margin: 2rem 0 0;
+.row .logos {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
+    column-gap: 32px;
+    row-gap: 48px;
+    padding: 3rem 5rem;
 }
 
-.logos img {
-    height: 24px;
-    margin: 0 12px 32px;
+.row .logos img {
+    height: 28px;
 }
 
-.logos .square {
-    height: 48px;
+.row .logos .square {
+    height: 64px;
 }
 
 /* Radzen Features */
@@ -361,6 +379,7 @@ video {
     color: #1151f3;
     transition: all 0.2s;
     border-bottom: 1px solid transparent;
+    text-decoration: none;
 }
 
 .popular-components a:hover {
@@ -402,11 +421,13 @@ video {
     color: #1151f3;
     transition: all 0.2s;
     border-bottom: 1px solid transparent;
+    text-decoration: none;
 }
 
 .all-components a:hover {
     color: #0E44CC;
-    border-bottom-color: #0E44CC; 
+    border-bottom-color: #0E44CC;
+    text-decoration: none;
 }
 
 .all-components .rz-badge {
@@ -418,18 +439,18 @@ video {
 
 /* Footer */
 
-.copyright {
+.row.copyright {
     margin-top: 6rem;
     opacity: .2;
     transition: all 0.4s ease-in-out;
 }
-.copyright p {
+.row.copyright p {
     font-size: 1rem;
     font-weight: 300;
     color: #ACAFB9;
 }
 
-.copyright:hover {
+.row.copyright:hover {
     opacity: 1;
 }
 
@@ -457,36 +478,16 @@ pre {
 
 .rz-sidebar {
     bottom: 0 !important;
-    border-right: 0 !important;
 }
 
-.content-footer {
-    background-image: url("../images/background.svg");
-    background-repeat: no-repeat;
-    background-position: right -450px top -200px;
-}
-
-.content-footer h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 100%;
-}
-
-.docu h2 {
-    font-weight: 700;
-    font-size: 2rem;
-    line-height: 2.5rem;
-    letter-spacing: -0.02em;
-}
 .rz-card.docu p,
 .rz-card.docu ul {
-    font-size: 18px;
     line-height: 1.6;
     margin-bottom: 1rem;
-    font-weight: 400;
 }
 
-.docu img {
+.docu img,
+.docu svg {
     display: block;
     width: 100%;
     max-width: 700px;
@@ -494,12 +495,15 @@ pre {
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.06);
 }
 
-img.illustration {
+svg.illustration {
     box-shadow: none;
     max-width: 300px;
     min-height: 220px;
 }
 
+.example-container {
+    max-width: 1440px;
+}
 /* Demos Sidebar */
 
 .demos-sidebar .rz-panel-menu .rz-navigation-item-icon-children {
@@ -508,8 +512,8 @@ img.illustration {
 
 .demos-sidebar .rz-panel-menu .rz-badge {
     margin-left: 0.5rem;
-    font-size: 0.5rem;
-    line-height: 0.625rem;
+    font-size: 9px;
+    line-height: 12px;
 }
 
 /* Responsive */

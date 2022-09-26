@@ -4,11 +4,14 @@
 @using RadzenBlazorDemos.Models.Northwind
 @using Microsoft.EntityFrameworkCore
 
-@inject NorthwindContext dbContext
+@inherits DbContextPage
 
-<h1>DataGrid Master Detail Hierarchy on demand</h1>
-
-<p>This page demonstrates how to use templates to create a Radzen Blazor DataGrid hierarchy and load data on demand.</p>
+<RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1" Class="my-4">
+    DataGrid Master Detail Hierarchy on demand
+</RadzenText>
+<RadzenText TextStyle="TextStyle.Body1" Class="my-4">
+    This page demonstrates how to use templates to create a Radzen Blazor DataGrid hierarchy and load data on demand.
+</RadzenText>
 
 <RadzenExample Name="DataGrid" Source="MasterDetailHierarchyOnDemand" Heading="false">
     <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowPaging="true" PageSize="3" AllowSorting="true" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Single"
@@ -55,6 +58,8 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
+
         orders = dbContext.Orders.Include("Customer").Include("Employee").ToList();
     }
 
@@ -71,14 +76,13 @@
         }
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        base.OnAfterRender(firstRender);
+
         if (firstRender)
         {
-            grid.ExpandRow(orders.FirstOrDefault());
-            StateHasChanged();
+            await grid.ExpandRow(orders.FirstOrDefault());
         }
-
-        base.OnAfterRender(firstRender);
     }
 }

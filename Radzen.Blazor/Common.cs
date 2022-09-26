@@ -15,6 +15,72 @@ using System.Threading.Tasks;
 namespace Radzen
 {
     /// <summary>
+    /// DataGrid settings class used to Save/Load settings.
+    /// </summary>
+    public class DataGridSettings
+    {
+        /// <summary>
+        /// Columns.
+        /// </summary>
+        public IEnumerable<DataGridColumnSettings> Columns { get; set; }
+        /// <summary>
+        /// Groups.
+        /// </summary>
+        public IEnumerable<GroupDescriptor> Groups { get; set; }
+        /// <summary>
+        /// CurrentPage.
+        /// </summary>
+        public int? CurrentPage { get; set; }
+        /// <summary>
+        /// PageSize.
+        /// </summary>
+        public int? PageSize { get; set; }
+    }
+
+    /// <summary>
+    /// DataGrid column settings class used to Save/Load settings.
+    /// </summary>
+    public class DataGridColumnSettings
+    {
+        /// <summary>
+        /// Property.
+        /// </summary>
+        public string Property { get; set; }
+        /// <summary>
+        /// Visible.
+        /// </summary>
+        public bool Visible { get; set; }
+        /// <summary>
+        /// Width.
+        /// </summary>
+        public string Width { get; set; }
+        /// <summary>
+        /// OrderIndex.
+        /// </summary>
+        public int? OrderIndex { get; set; }
+        /// <summary>
+        /// SortOrder.
+        /// </summary>
+        public SortOrder? SortOrder { get; set; }
+        /// <summary>
+        /// FilterValue.
+        /// </summary>
+        public object FilterValue { get; set; }
+        /// <summary>
+        /// FilterOperator.
+        /// </summary>
+        public FilterOperator FilterOperator { get; set; }
+        /// <summary>
+        /// SecondFilterValue.
+        /// </summary>
+        public object SecondFilterValue { get; set; }
+        /// <summary>
+        /// SecondFilterOperator.
+        /// </summary>
+        public FilterOperator SecondFilterOperator { get; set; }
+    }
+
+    /// <summary>
     /// Enables "onmouseenter" and "onmouseleave" event support in Blazor. Not for public use.
     /// </summary>
     [EventHandler("onmouseenter", typeof(EventArgs), true, true)]
@@ -73,7 +139,7 @@ namespace Radzen
     /// <summary>
     /// A class that represents a <see cref="RadzenGoogleMap" /> position.
     /// </summary>
-    public class GoogleMapPosition
+    public class GoogleMapPosition : IEquatable<GoogleMapPosition>
     {
         /// <summary>
         /// Gets or sets the latitude.
@@ -85,6 +151,29 @@ namespace Radzen
         /// </summary>
         /// <value>The longitude.</value>
         public double Lng { get; set; }
+
+        /// <inheritdoc />
+        public bool Equals(GoogleMapPosition other)
+        {
+            if (other != null)
+            {
+                return this.Lat == other.Lat && this.Lng == other.Lng;
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return this.Equals(obj as GoogleMapPosition);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
     /// <summary>
@@ -437,6 +526,21 @@ namespace Radzen
     }
 
     /// <summary>
+    /// Specifies the ways a component renders its popup.
+    /// </summary>
+    public enum PopupRenderMode
+    {
+        /// <summary>
+        /// The component renders its popup on-demand.
+        /// </summary>
+        OnDemand,
+        /// <summary>
+        /// The component renders its popup initially.
+        /// </summary>
+        Initial
+    }
+
+    /// <summary>
     /// Specifies the ways a <see cref="RadzenTabs" /> component renders its items.
     /// </summary>
     public enum TabRenderMode
@@ -602,6 +706,10 @@ namespace Radzen
         /// </summary>
         Light,
         /// <summary>
+        /// Dark styling. Similar to dark buttons.
+        /// </summary>
+        Dark,
+        /// <summary>
         /// Success styling.
         /// </summary>
         Success,
@@ -678,6 +786,10 @@ namespace Radzen
         /// </summary>
         Medium,
         /// <summary>
+        /// A button larger than the default.
+        /// </summary>
+        Large,
+        /// <summary>
         /// A button smaller than the default.
         /// </summary>
         Small
@@ -701,6 +813,10 @@ namespace Radzen
         /// </summary>
         Light,
         /// <summary>
+        /// A button with dark styling.
+        /// </summary>
+        Dark,
+        /// <summary>
         /// A button with success styling.
         /// </summary>
         Success,
@@ -716,6 +832,56 @@ namespace Radzen
         /// A button with informative styling.
         /// </summary>
         Info
+    }
+
+    /// <summary>
+    /// Specifies the design variant of <see cref="RadzenButton" /> and <see cref="RadzenBadge" />. Affects the visual styling of RadzenButton and RadzenBadge.
+    /// </summary>
+    public enum Variant
+    {
+        /// <summary>
+        /// A filled appearance.
+        /// </summary>
+        Filled,
+        /// <summary>
+        /// A flat appearance without any drop shadows.
+        /// </summary>
+        Flat,
+        /// <summary>
+        /// A text appearance.
+        /// </summary>
+        Text,
+        /// <summary>
+        /// An outlined appearance.
+        /// </summary>
+        Outlined
+    }
+
+    /// <summary>
+    /// Specifies the color shade of a <see cref="RadzenButton" />. Affects the visual styling of RadzenButton.
+    /// </summary>
+    public enum Shade
+    {
+        /// <summary>
+        /// A button with lighter styling.
+        /// </summary>
+        Lighter,
+        /// <summary>
+        /// A button with light styling.
+        /// </summary>
+        Light,
+        /// <summary>
+        /// A button with default styling.
+        /// </summary>
+        Default,
+        /// <summary>
+        /// A button with dark styling.
+        /// </summary>
+        Dark,
+        /// <summary>
+        /// A button with darker styling.
+        /// </summary>
+        Darker
     }
 
     /// <summary>
@@ -865,7 +1031,15 @@ namespace Radzen
         /// <summary>
         /// The text is centered in its container.
         /// </summary>
-        Center
+        Center,
+        /// <summary>The text is justified.</summary>
+        Justify,
+        /// <summary>Same as justify, but also forces the last line to be justified.</summary>
+        JustifyAll,
+        /// <summary>The same as left if direction is left-to-right and right if direction is right-to-left..</summary>
+        Start,
+        /// <summary>The same as right if direction is left-to-right and left if direction is right-to-left..</summary>
+        End
     }
 
     /// <summary>
@@ -909,6 +1083,10 @@ namespace Radzen
         /// </summary>
         Light,
         /// <summary>
+        /// Dark styling. Similar to dark buttons.
+        /// </summary>
+        Dark,
+        /// <summary>
         /// Success styling.
         /// </summary>
         Success,
@@ -943,6 +1121,10 @@ namespace Radzen
         /// Light styling. Similar to light buttons.
         /// </summary>
         Light,
+        /// <summary>
+        /// Dark styling. Similar to dark buttons.
+        /// </summary>
+        Dark,
         /// <summary>
         /// Success styling.
         /// </summary>
@@ -1135,6 +1317,42 @@ namespace Radzen
     }
 
     /// <summary>
+    /// Represents a filter in a component that supports filtering.
+    /// </summary>
+    public class CompositeFilterDescriptor
+    {
+        /// <summary>
+        /// Gets or sets the name of the filtered property.
+        /// </summary>
+        /// <value>The property.</value>
+        public string Property { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value to filter by.
+        /// </summary>
+        /// <value>The filter value.</value>
+        public object FilterValue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the operator which will compare the property value with <see cref="FilterValue" />.
+        /// </summary>
+        /// <value>The filter operator.</value>
+        public FilterOperator FilterOperator { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the logic used to combine the outcome of filtering by <see cref="FilterValue" />.
+        /// </summary>
+        /// <value>The logical filter operator.</value>
+        public LogicalFilterOperator LogicalFilterOperator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the filters.
+        /// </summary>
+        /// <value>The filters.</value>
+        public IEnumerable<CompositeFilterDescriptor> Filters { get; set; }
+    }
+
+    /// <summary>
     /// Represents a sorting description. Used in components that support sorting.
     /// </summary>
     public class SortDescriptor
@@ -1238,6 +1456,30 @@ namespace Radzen
         /// </summary>
         /// <value>The sorts.</value>
         public IEnumerable<SortDescriptor> Sorts { get; set; }
+    }
+
+    /// <summary>
+    /// Supplies information about a <see cref="RadzenDataGrid{TItem}.LoadChildData" /> event that is being raised.
+    /// </summary>
+    public class DataGridLoadChildDataEventArgs<T>
+    {
+        /// <summary>
+        /// Gets or sets the data.
+        /// </summary>
+        /// <value>The data.</value>
+        public IEnumerable<T> Data { get; set; }
+
+        /// <summary>
+        /// Gets the item.
+        /// </summary>
+        /// <value>The item.</value>
+        public T Item { get; internal set; }
+    }
+
+    internal class DataGridChildData<T>
+    {
+        internal int Level { get; set; }
+        internal IEnumerable<T> Data { get; set; }
     }
 
     /// <summary>
