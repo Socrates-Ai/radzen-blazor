@@ -221,6 +221,26 @@ $button-sizes: (
     ),
     text-with-icon-padding: 0 1.375rem,
     icon-only-padding: 0.375rem
+  ),
+  xs: (
+    font-size: 0.75rem,
+    padding: 0.25rem 0.5rem,
+    line-height: 1rem,
+    height: auto,
+    min-height: 1.25rem,
+    min-width: 1.25rem,
+    font-weight: 500,
+    letter-spacing: 0,
+    text-transform: uppercase,
+    gap: 0.125rem,
+    icon: (
+      font-size: 1rem,
+      height: 1rem,
+      line-height: 1rem,
+      width: 1rem
+    ),
+    text-with-icon-padding: 0 1rem,
+    icon-only-padding: 0.25rem
   )
 ) !default;
 
@@ -310,20 +330,29 @@ $sidebar-toggle-hover-border-radius: 50% !default;
 }
 
 // Menu
+$menu-background-color: var(--rz-base-background-color) !default;
 $menu-border: none !default;
 $menu-border-radius: var(--rz-border-radius) !default;
 $menu-item-padding: 0.5rem 1rem !default;
-$menu-item-selected-color: var(--rz-primary) !default;
+$menu-item-color: var(--rz-text-color) !default;
+$menu-item-hover-color: var(--rz-text-title-color) !default;
 $menu-item-hover-background-color: var(--rz-base-100) !default;
-$menu-item-hover-color: var(--rz-base-900) !default;
-$menu-top-item-padding: 0.5rem 1rem !default;
-$menu-top-item-hover-color: var(--rz-primary) !default;
-$menu-top-item-hover-background-color: var(--rz-base-background-color) !default;
-$menu-top-item-background-color: var(--rz-base-background-color) !default;
+$menu-item-selected-color: var(--rz-text-title-color) !default;
+$menu-item-icon-color: $menu-item-color !default;
+$menu-item-icon-hover-color: $menu-item-hover-color !default;
+$menu-top-item-padding: 0.5rem !default;
+$menu-top-item-color: var(--rz-text-contrast-color) !default;
+$menu-top-item-background-color: var(--rz-primary) !default;
+$menu-top-item-hover-color: var(--rz-text-contrast-color) !default;
+$menu-top-item-hover-background-color: transparent !default;
+$menu-top-item-selected-color: var(--rz-text-contrast-color) !default;
+$menu-top-item-icon-color: $menu-top-item-color !default;
+$menu-top-item-icon-hover-color: $menu-top-item-hover-color !default;
 $context-menu-padding: 0.5rem 0 !default;
 $context-menu-box-shadow: var(--rz-shadow-6) !default;
 
-.rz-navigation-item-link {
+.rz-navigation-item-link,
+.rz-menu-toggle {
   @include rz-ripple($pseudo: true);
 }
 
@@ -1122,17 +1151,6 @@ $tabs-transition: var(--rz-transition-all) !default;
   &.rz-tabview-right > .rz-tabview-panels {
     border-right: $tabs-tab-panels-border;
   }
-
-  .rz-tabview-panel {
-    padding: var(--rz-tabs-padding) 0;
-  }
-
-  &.rz-tabview-left,
-  &.rz-tabview-right {
-    .rz-tabview-panel {
-      padding: 0 var(--rz-tabs-padding);
-    }
-  }
 }
 
 // Dialog
@@ -1174,6 +1192,14 @@ $scrollbar-border-radius: 0 !default;
 
 // Login
 $login-register-background-color: rgba(#000, 0.04) !default;
+
+.rz-login {
+  .rz-textbox  {
+    &.invalid {
+      --rz-input-focus-shadow: inset 0 0 0 1px var(--rz-danger);
+    }
+  }
+}
 
 // Lookup
 $lookup-panel-background-color: rgba(#000, 0.04) !default;

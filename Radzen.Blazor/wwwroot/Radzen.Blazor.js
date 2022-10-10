@@ -658,22 +658,22 @@ window.Radzen = {
 
     e.preventDefault();
   },
-  openContextMenu: function (x,y,id) {
+  openContextMenu: function (x,y,id, instance, callback) {
     Radzen.closePopup(id);
 
-    Radzen.openPopup(null, id, false, null, x, y);
+    Radzen.openPopup(null, id, false, null, x, y, instance, callback);
   },
-  openTooltip: function (target, id, duration, position, closeTooltipOnDocumentClick) {
+  openTooltip: function (target, id, duration, position, closeTooltipOnDocumentClick, instance, callback) {
     Radzen.closePopup(id);
 
     if (Radzen[id + 'duration']) {
       clearTimeout(Radzen[id + 'duration']);
     }
 
-    Radzen.openPopup(target, id, false, position, null, null, null, null, closeTooltipOnDocumentClick);
+    Radzen.openPopup(target, id, false, position, null, null, instance, callback, closeTooltipOnDocumentClick);
 
     if (duration) {
-      Radzen[id + 'duration'] = setTimeout(Radzen.closePopup, duration, id);
+      Radzen[id + 'duration'] = setTimeout(Radzen.closePopup, duration, id, instance, callback);
     }
   },
   findPopup: function (id) {
@@ -807,7 +807,8 @@ window.Radzen = {
 
     Radzen[id] = function (e) {
         if(e.type == 'contextmenu' || !e.target || !closeOnDocumentClick) return;
-        if (!/Android/i.test(navigator.userAgent) && e.type == 'resize') {
+        if (!/Android/i.test(navigator.userAgent) &&
+            !['input', 'textarea'].includes(document.activeElement ? document.activeElement.tagName.toLowerCase() : '') && e.type == 'resize') {
             Radzen.closePopup(id, instance, callback);
             return;
         }

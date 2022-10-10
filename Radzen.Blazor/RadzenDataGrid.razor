@@ -45,7 +45,7 @@
                 @if(AllowColumnPicking)
                 {
                     <div class="rz-column-picker">
-                        <RadzenDropDown SelectAllText="@AllColumnsText"
+                        <RadzenDropDown SelectAllText="@AllColumnsText" AllowSelectAll="@AllowPickAllColumns"
                                         MaxSelectedLabels="2" 
                                         SelectedItemsText="@ColumnsShowingText" Change=@ToggleColumns
                                         @bind-Value="@selectedColumns" 
@@ -133,7 +133,7 @@
                         }
                         @foreach (var column in visibleColumns)
                         {
-                            <th colspan="@column.GetColSpan()" class="@($" rz-unselectable-text")" scope="col" style="@column.GetStyle(true, true)">
+                            <th colspan="@column.GetColSpan()" class="@($"rz-unselectable-text {getFrozenColumnClass(column, visibleColumns)}")" scope="col" style="@column.GetStyle(true, true)">
                                 @if (AllowFiltering && column.Filterable && column.Columns == null && (!string.IsNullOrEmpty(column.GetFilterProperty()) || column.FilterTemplate != null))
                                 {
                                     <div class="rz-cell-filter">
@@ -260,8 +260,8 @@
                                                     {
                                                         <RadzenDropDown Style="width:100%" AllowClear="true" AllowFiltering="false" TValue="@object"
                                                                         Value=@column.GetFilterValue() Multiple="false" Placeholder="@EnumFilterSelectText" TextProperty="Text" ValueProperty="Value"
-                                                                        Data=@EnumExtensions.EnumAsKeyValuePair(Nullable.GetUnderlyingType(column.FilterPropertyType) ?? column.FilterPropertyType)
-                                                                        Change="@(args => {column.SetFilterValue(args);ApplyFilter(column, true);})" />
+                                                                        Data=@((PropertyAccess.IsNullableEnum(column.FilterPropertyType) ? new object[]{ new { Value = -1, Text = "<null>"}} : Enumerable.Empty<object>()).Concat(EnumExtensions.EnumAsKeyValuePair(Nullable.GetUnderlyingType(column.FilterPropertyType) ?? column.FilterPropertyType)))
+                                                                        Change="@(args => {column.SetFilterValue(args);column.SetFilterOperator(object.Equals(args, -1) ? FilterOperator.IsNull : FilterOperator.Equals);ApplyFilter(column, true);})" />
                                                     }
                                                     else if (PropertyAccess.IsNumeric(column.FilterPropertyType))
                                                     {
