@@ -514,7 +514,7 @@ namespace Radzen.Blazor
                 }
                 else
                 {
-                    action = args => column.SetFilterValue(args, isFirst);
+                    action = args => { column.SetFilterValue(args, isFirst); SaveSettings(); };
                 }
 
                 var eventCallbackGenericCreate = typeof(NumericFilterEventCallback).GetMethod("Create").MakeGenericMethod(type);
@@ -543,6 +543,7 @@ namespace Radzen.Blazor
                         }
 
                         column.SetFilterValue(filterValue, isFirst);
+                        SaveSettings();
                     }));
                 }
                 else if (FilterMode == FilterMode.SimpleWithMenu)
@@ -1509,6 +1510,7 @@ namespace Radzen.Blazor
             {
                 selectedItems.Clear();
                 expandedItems.Clear();
+                collapsedGroupItems.Clear();
             }
 
             if (resetColumnState)
@@ -1572,6 +1574,7 @@ namespace Radzen.Blazor
                 {
                     if(virtualize != null)
                     {
+                        await virtualize.RefreshDataAsync();
                         await virtualize.RefreshDataAsync();
                     }
 
@@ -2249,6 +2252,8 @@ namespace Radzen.Blazor
                     }
                 }
             }
+
+            SaveSettings();
         }
 
         List<RadzenDataGridColumn<TItem>> groupedColumns = new List<RadzenDataGridColumn<TItem>>();
@@ -2293,7 +2298,6 @@ namespace Radzen.Blazor
                         _groupedPagedView = null;
 
                         await Group.InvokeAsync(new DataGridColumnGroupEventArgs<TItem>() { Column = column, GroupDescriptor = descriptor });
-                        SaveSettings();
 
                         if (IsVirtualizationAllowed())
                         {
@@ -2434,15 +2438,24 @@ namespace Radzen.Blazor
 
             SaveSettings();
 
+            await PageSizeChanged.InvokeAsync(value);
+
             await base.OnPageSizeChanged(value);
         }
+
+        /// <summary>
+        /// Gets or sets the page size changed callback.
+        /// </summary>
+        /// <value>The page size changed callback.</value>
+        [Parameter]
+        public EventCallback<int> PageSizeChanged { get; set; }
 
         /// <summary>
         /// Gets DataGrid settings as JSON string.
         /// </summary>
         internal void SaveSettings()
         {
-            if (SettingsChanged.HasDelegate)
+            if (SettingsChanged.HasDelegate && canSaveSettings)
             {
                 settings = new DataGridSettings()
                 {
@@ -2526,7 +2539,7 @@ namespace Radzen.Blazor
 
                             if (!object.Equals(gridColumn.GetSecondFilterValue(), GetFilterValue(column.SecondFilterValue, gridColumn.FilterPropertyType)))
                             {
-                                gridColumn.SetFilterValue(GetFilterValue(column.SecondFilterValue, gridColumn.FilterPropertyType), true);
+                                gridColumn.SetFilterValue(GetFilterValue(column.SecondFilterValue, gridColumn.FilterPropertyType), false);
                                 shouldUpdateState = true;
                             }
                         }
@@ -2554,6 +2567,7 @@ namespace Radzen.Blazor
 
                 if (shouldUpdateState)
                 {
+                    skip = CurrentPage * PageSize;
                     CalculatePager();
                     UpdateColumnsOrder();
                     await Reload();
@@ -2605,6 +2619,8 @@ namespace Radzen.Blazor
             }
         }
 
+        bool canSaveSettings = true;
+
         DataGridSettings settings;
 
         /// <summary>
@@ -2625,14 +2641,19 @@ namespace Radzen.Blazor
 
                     if (settings == null)
                     {
+                        canSaveSettings = false;
+
                         Groups.Clear();
                         CurrentPage = 0;
+                        skip = 0;
                         Reset(true);
                         allColumns.ToList().ForEach(c =>
                         {
                             c.SetVisible(true);
                         });
                         InvokeAsync(Reload);
+
+                        canSaveSettings = true;
                     }
                 }
             }
@@ -2647,8 +2668,10 @@ namespace Radzen.Blazor
 
         async Task ChangePage(PagerEventArgs args)
         {
-            await OnPageChanged(args);
+            CurrentPage = args.PageIndex;
             SaveSettings();
+
+            await OnPageChanged(args);
         }
     }
 }

@@ -266,6 +266,10 @@ namespace Radzen.Blazor
                             builder.AddAttribute(7, "ChildContent", RenderChildren(grandChildren, depth + 1));
                             builder.AddAttribute(8, nameof(RadzenTreeItem.Data), grandChildren);
                         }
+                        else
+                        {
+                            builder.AddAttribute(7, "ChildContent", (RenderFragment)null);
+						}
                     }
 
                     builder.CloseComponent();
