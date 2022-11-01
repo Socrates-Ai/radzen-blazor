@@ -10,7 +10,7 @@
 @if (Visible)
 {
     <div @ref="@Element" @attributes="Attributes" class="@GetCssClass()" @onfocus="@((args) => OnFocus(args))"
-         style="@Style" tabindex="@(Disabled ? "-1" : $"{TabIndex}")" id="@GetId()" @onclick="@(args => OpenPopup("ArrowDown", false, true))" @onclick:preventDefault @onclick:stopPropagation 
+         style="@Style" tabindex="@(Disabled ? "-1" : $"{TabIndex}")" id="@GetId()" @onclick="@(args => OpenPopup("ArrowDown", false, true))" @onclick:preventDefault @onclick:stopPropagation
          @onkeydown="@((args) => OnKeyPress(args))">
         <div class="rz-helper-hidden-accessible">
             <input tabindex="-1" disabled="@Disabled" style="width:100%" aria-haspopup="listbox" readonly="" type="text"
@@ -47,7 +47,7 @@
                         <div class="rz-chip">
                             <span class="rz-chip-text">
                                 @PropertyAccess.GetItemOrValueFromProperty(item, TextProperty)
-                            </span>  
+                            </span>
                             <button class="rz-button rz-button-sm rz-button-icon-only rz-light @(Disabled ?"rz-state-disabled":"")" @onclick:preventDefault @onclick:stopPropagation @onclick="() => OnChipRemove(item)"><RadzenIcon Icon="close" /></button>
                         </div>
                     }

@@ -15,9 +15,9 @@ ul.rz-profile-menu {
 .dialog-full-height {
 }
 
+
+
 div.rz-dialog-content div.dialog-full-height {
-  position: absolute;
-  height: 100%;
   width: 100%;
 
   display: flex;
@@ -27,6 +27,5 @@ div.rz-dialog-content div.dialog-full-height {
 
 div.rz-dialog div.rz-dialog-content{
   padding: 0;
+  height: 100%;
 }
-
-
