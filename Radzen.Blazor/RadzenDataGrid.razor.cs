@@ -1263,7 +1263,7 @@ namespace Radzen.Blazor
 
                             childData[item].Level = level;
 
-                            var cd = childData[item].Data.AsQueryable().Where<TItem>(allColumns);
+                            var cd = childData[item].Data.AsQueryable();
                             if (!string.IsNullOrEmpty(orderBy))
                             {
                                 cd = cd.OrderBy(orderBy);
@@ -1274,8 +1274,8 @@ namespace Radzen.Blazor
                     }
 
                     view = viewList.AsQueryable()
-                        .Where(i => childData.ContainsKey(i) ? childData[i].Data.AsQueryable().Where<TItem>(allColumns).Any() 
-                            : viewList.AsQueryable().Where<TItem>(allColumns).Contains(i));
+                        .Where(i => childData.ContainsKey(i) && childData[i].Data.AsQueryable().Where<TItem>(allColumns).Any()
+                            || viewList.AsQueryable().Where<TItem>(allColumns).Contains(i));
                 }
                 else
                 {
@@ -2548,9 +2548,11 @@ namespace Radzen.Blazor
 
                 if (settings.Groups != null && !settings.Groups.SequenceEqual(Groups))
                 {
+                    groups.CollectionChanged -= GroupsCollectionChanged;
                     Groups.Clear();
                     settings.Groups.ToList().ForEach(Groups.Add);
                     shouldUpdateState = true;
+                    groups.CollectionChanged += GroupsCollectionChanged;
                 }
 
                 if (settings.CurrentPage != null && settings.CurrentPage != CurrentPage)

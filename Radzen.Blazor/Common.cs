@@ -90,7 +90,7 @@ namespace Radzen
     }
 
     /// <summary>
-    /// Represents the common <see cref="RadzenSelectBar{TValue}" /> API used by 
+    /// Represents the common <see cref="RadzenSelectBar{TValue}" /> API used by
     /// its items. Injected as a cascading property in <see cref="RadzenSelectBarItem" />.
     /// </summary>
     public interface IRadzenSelectBar
@@ -679,13 +679,79 @@ namespace Radzen
         /// </summary>
         Info,
         /// <summary>
-        /// Represents a success. 
+        /// Represents a success.
         /// </summary>
         Success,
         /// <summary>
         /// Represents a warning.
         /// </summary>
         Warning
+    }
+
+    /// <summary>
+    /// Specifies the display style or severity of a <see cref="RadzenAlert" />. Affects the visual styling of RadzenAlert (background and text color).
+    /// </summary>
+    public enum AlertStyle
+    {
+        /// <summary>
+        /// Primary styling. Similar to primary buttons.
+        /// </summary>
+        Primary,
+        /// <summary>
+        /// Secondary styling. Similar to secondary buttons.
+        /// </summary>
+        Secondary,
+        /// <summary>
+        /// Light styling. Similar to light buttons.
+        /// </summary>
+        Light,
+        /// <summary>
+        /// Dark styling. Similar to dark buttons.
+        /// </summary>
+        Base,
+        /// <summary>
+        /// The default styling.
+        /// </summary>
+        Dark,
+        /// <summary>
+        /// Success styling.
+        /// </summary>
+        Success,
+        /// <summary>
+        /// Danger styling.
+        /// </summary>
+        Danger,
+        /// <summary>
+        /// Warning styling.
+        /// </summary>
+        Warning,
+        /// <summary>
+        /// Informative styling.
+        /// </summary>
+        Info
+    }
+
+    /// <summary>
+    /// Specifies the size of a <see cref="RadzenAlert" />.
+    /// </summary>
+    public enum AlertSize
+    {
+        /// <summary>
+        /// The smallest alert.
+        /// </summary>
+        ExtraSmall,
+        /// <summary>
+        /// A alert smaller than the default.
+        /// </summary>
+        Small,
+        /// <summary>
+        /// The default size of an alert.
+        /// </summary>
+        Medium,
+        /// <summary>
+        /// An alert larger than the default.
+        /// </summary>
+        Large
     }
 
     /// <summary>
@@ -698,7 +764,7 @@ namespace Radzen
         /// </summary>
         Determinate,
         /// <summary>
-        /// RadzenProgressBar displays continuous animation. 
+        /// RadzenProgressBar displays continuous animation.
         /// </summary>
         Indeterminate
     }
@@ -1357,7 +1423,7 @@ namespace Radzen
         /// </summary>
         /// <value>The filter operator.</value>
         public FilterOperator FilterOperator { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the logic used to combine the outcome of filtering by <see cref="FilterValue" />.
         /// </summary>
@@ -1809,6 +1875,9 @@ namespace Radzen
         /// Gets or sets the password.
         /// </summary>
         public string Password { get; set; }
+
+        /// <summary> Gets or sets a value indicating whether the user wants to remember their credentials. </summary>
+        public bool RememberMe { get; set; }
     }
 
     /// <summary>
@@ -1838,7 +1907,7 @@ namespace Radzen
             {
                 return Enum.Parse(Nullable.GetUnderlyingType(type), value.ToString());
             }
-            
+
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
                 Type itemType = type.GetGenericArguments()[0];
@@ -1881,7 +1950,12 @@ namespace Radzen
 
             foreach (var member in propertyName.Split("."))
             {
-                body = Expression.PropertyOrField(body, member);
+                body = !body.Type.IsInterface ? 
+                    Expression.PropertyOrField(body, member) :
+                        Expression.Property(
+                            body,
+                            new Type[] { body.Type }.Concat(body.Type.GetInterfaces()).FirstOrDefault(t => t.GetProperty(member) != null),
+                            member);
             }
 
             body = Expression.Convert(body, typeof(TValue));
@@ -2079,11 +2153,11 @@ namespace Radzen
             return source.IsEnum;
         }
 
-        /// <summary> 
-        /// Determines whether the specified type is a Nullable enum. 
-        /// </summary> 
-        /// <param name="source">The type.</param> 
-        /// <returns><c>true</c> if the specified source is an enum; otherwise, <c>false</c>.</returns> 
+        /// <summary>
+        /// Determines whether the specified type is a Nullable enum.
+        /// </summary>
+        /// <param name="source">The type.</param>
+        /// <returns><c>true</c> if the specified source is an enum; otherwise, <c>false</c>.</returns>
         public static bool IsNullableEnum(Type source)
         {
             if (source == null) return false;
@@ -2113,7 +2187,6 @@ namespace Radzen
             return false;
         }
 
-
         /// <summary>
         /// Gets the type of the property.
         /// </summary>
@@ -2125,15 +2198,27 @@ namespace Radzen
             if (property.Contains("."))
             {
                 var part = property.Split('.').FirstOrDefault();
-                return GetPropertyType(type?.GetProperty(part)?.PropertyType, property.Replace($"{part}.", ""));
+                return GetPropertyType(GetPropertyTypeIncludeInterface(type, part), property.Replace($"{part}.", ""));
             }
 
-            return type?.GetProperty(property)?.PropertyType;
+            return GetPropertyTypeIncludeInterface(type, property);
+        }
+
+        private static Type GetPropertyTypeIncludeInterface(Type type, string property)
+        {
+            if (type != null)
+            {
+                return !type.IsInterface ?
+                    type.GetProperty(property)?.PropertyType :
+                        new Type[] { type }.Concat(type.GetInterfaces()).FirstOrDefault(t => t.GetProperty(property) != null);
+            }
+
+            return null;
         }
     }
 
     /// <summary>
-    /// Represents the common <see cref="RadzenTemplateForm{TItem}" /> API used by 
+    /// Represents the common <see cref="RadzenTemplateForm{TItem}" /> API used by
     /// its items. Injected as a cascading property in <see cref="IRadzenFormComponent" />.
     /// </summary>
     public interface IRadzenForm

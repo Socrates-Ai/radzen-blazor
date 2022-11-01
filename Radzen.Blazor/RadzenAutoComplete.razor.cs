@@ -28,6 +28,13 @@ namespace Radzen.Blazor
         public bool Multiline { get; set; }
 
         /// <summary>
+        /// Gets or sets the Popup height.
+        /// </summary>
+        /// <value>The number Popup height.</value>
+        [Parameter]
+        public string PopupStyle { get; set; } = "display:none; transform: none; box-sizing: border-box; max-height: 200px;";
+
+        /// <summary>
         /// Gets or sets the template.
         /// </summary>
         /// <value>The template.</value>

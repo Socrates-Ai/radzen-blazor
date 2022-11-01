@@ -563,7 +563,7 @@ $switch-circle-margin: 0 !default;
   &:hover:not(.rz-disabled) {
     &:before {
       transition: background var(--rz-transition), transform var(--rz-transition), outlin-color var(--rz-transition);
-      outline: 10px solid rgba(0, 0, 0, 0.04);
+      box-shadow: var(--rz-switch-box-shadow), 0 0 0 10px rgba(0, 0, 0, 0.04);
     }
   }
 }
@@ -571,7 +571,7 @@ $switch-circle-margin: 0 !default;
 .rz-switch.rz-switch-checked .rz-switch-circle {
   &:hover:not(.rz-disabled) {
     &:before {
-      outline: 10px solid var(--rz-primary-lighter);
+      box-shadow: var(--rz-switch-box-shadow), 0 0 0 10px var(--rz-primary-lighter);
     }
   }
 }
@@ -1207,7 +1207,7 @@ $dialog-background-color: var(--rz-base-background-color) !default;
 $dialog-shadow: var(--rz-shadow-9) !default;
 $dialog-title-background-color: var(--rz-base-background-color) !default;
 $dialog-title-border: none !default;
-$dialog-title-padding: 1.5rem 1.5rem 1rem 1.5rem !default;
+$dialog-title-padding: 1.5rem 1.5rem 0 1.5rem !default;
 $dialog-title-font-size: 1.25rem !default;
 $dialog-title-line-height: 1.5rem !default;
 $dialog-title-font-weight: 500 !default;
@@ -1233,6 +1233,40 @@ $notification-error-color: var(--rz-danger) !default;
 $notification-error-background-color: var(--rz-danger-lighter) !default;
 $notification-info-color: var(--rz-info) !default;
 $notification-info-background-color: var(--rz-info-lighter) !default;
+
+// Alert 
+$alert-message-margin: 0 !default;
+
+$alert-sizes: () !default;
+$alert-sizes: map-merge(
+  (
+    lg: (
+      gap: 1.5rem,
+      margin: 1.5rem 0,
+      padding: 1.5rem,
+      message-margin: 0.125rem 0
+    ),
+    md: (
+      gap: 1rem,
+      margin: 1rem 0,
+      padding: 1rem,
+      message-margin: 0.125rem 0
+    ),
+    sm: (
+      gap: 0.5rem,
+      margin: 0.5rem 0,
+      padding: 0.5rem,
+      message-margin: 0.125rem 0
+    ),
+    xs: (
+      gap: 0.25rem,
+      margin: 0.25rem 0,
+      padding: 0.25rem,
+      message-margin: 0
+    )
+  ),
+  $alert-sizes
+);
 
 // Scrollbar
 $scrollbar-background-color: transparent !default;
