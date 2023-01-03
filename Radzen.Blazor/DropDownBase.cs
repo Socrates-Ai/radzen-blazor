@@ -292,7 +292,7 @@ namespace Radzen
         {
             if (LoadData.HasDelegate && !string.IsNullOrEmpty(ValueProperty))
             {
-                return View != null && View.Cast<object>().All(i => IsItemSelectedByValue(PropertyAccess.GetValue(i, ValueProperty)));
+                return View != null && View.Cast<object>().All(i => IsItemSelectedByValue(GetItemOrValueFromProperty(i, ValueProperty)));
             }
 
             return View != null && selectedItems.Count == View.Cast<object>().Count();
@@ -362,7 +362,7 @@ namespace Radzen
                         selectedItem = null;
                         selectedItems.Clear();
                     }
-                   
+
                     InvokeAsync(OnDataChanged);
                 }
             }
@@ -380,7 +380,7 @@ namespace Radzen
                 var type = query.ElementType;
 
                 if (type == typeof(object) && typeof(EnumerableQuery).IsAssignableFrom(query.GetType()) && query.Any())
-                { 
+                {
                     type = query.FirstOrDefault().GetType();
                 }
 
@@ -413,17 +413,26 @@ namespace Radzen
         /// <returns>System.Object.</returns>
         public object GetItemOrValueFromProperty(object item, string property)
         {
-            if (property == TextProperty && textPropertyGetter != null)
+            if (item != null)
             {
-                return textPropertyGetter(item);
-            }
-            else if (property == ValueProperty && valuePropertyGetter != null)
-            {
-                return valuePropertyGetter(item);
-            }
-            else if (property == DisabledProperty && disabledPropertyGetter != null)
-            {
-                return disabledPropertyGetter(item);
+                if (property == TextProperty && textPropertyGetter != null)
+                {
+                    return textPropertyGetter(item);
+                }
+                else if (property == ValueProperty && valuePropertyGetter != null)
+                {
+                    return valuePropertyGetter(item);
+                }
+                else if (property == DisabledProperty && disabledPropertyGetter != null)
+                {
+                    return disabledPropertyGetter(item);
+                }
+
+                var enumValue = item as Enum;
+                if (enumValue != null)
+                {
+                    return Radzen.Blazor.EnumExtensions.GetDisplayDescription(enumValue);
+                }
             }
 
             return item;
@@ -595,7 +604,7 @@ namespace Radzen
                     //
                 }
             }
-            else if (Multiple && key == "Space")
+            else if (Multiple && key == "Enter")
             {
                 if (selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
                 {
@@ -836,11 +845,11 @@ namespace Radzen
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns><c>true</c> if the specified item is selected; otherwise, <c>false</c>.</returns>
-        internal bool isSelected(object item)
+        internal bool IsSelected(object item)
         {
-            if (LoadData.HasDelegate && !string.IsNullOrEmpty(ValueProperty))
+            if (!string.IsNullOrEmpty(ValueProperty))
             {
-                return IsItemSelectedByValue(PropertyAccess.GetValue(item, ValueProperty));
+                return IsItemSelectedByValue(GetItemOrValueFromProperty(item, ValueProperty));
             }
             else
             {
@@ -987,6 +996,11 @@ namespace Radzen
         /// <param name="raiseChange">if set to <c>true</c> [raise change].</param>
         public async System.Threading.Tasks.Task SelectItem(object item, bool raiseChange = true)
         {
+            if (disabledPropertyGetter != null && disabledPropertyGetter(item) as bool? == true)
+            {
+                return;
+            }
+
             if (!Multiple)
             {
                 if (object.Equals(item, selectedItem))
@@ -995,7 +1009,7 @@ namespace Radzen
                 selectedItem = item;
                 if (!string.IsNullOrEmpty(ValueProperty))
                 {
-                    internalValue = GetItemOrValueFromProperty(item, ValueProperty);
+                    internalValue = PropertyAccess.GetItemOrValueFromProperty(item, ValueProperty);
                 }
                 else
                 {
@@ -1008,30 +1022,7 @@ namespace Radzen
             }
             else
             {
-                if (!string.IsNullOrEmpty(ValueProperty))
-                {
-                    if (LoadData.HasDelegate)
-                    {
-                        var v = PropertyAccess.GetValue(item, ValueProperty);
-                        var si = (selectedItems ?? Enumerable.Empty<object>()).AsQueryable().Where($@"object.Equals({ValueProperty},@0)", v).FirstOrDefault();
-                        if (si == null)
-                        {
-                            selectedItems.Add(item);
-                        }
-                        else
-                        {
-                            selectedItems.Remove(si);
-                        }
-                    }
-                    else
-                    {
-                        UpdateSelectedItems(item);
-                    }
-                }
-                else
-                {
-                    UpdateSelectedItems(item);
-                }
+                UpdateSelectedItems(item);
 
                 if (!string.IsNullOrEmpty(ValueProperty))
                 {
@@ -1093,13 +1084,29 @@ namespace Radzen
 
         internal void UpdateSelectedItems(object item)
         {
-            if (selectedItems.IndexOf(item) == -1)
+            if (!string.IsNullOrEmpty(ValueProperty))
             {
-                selectedItems.Add(item);
+                var value = GetItemOrValueFromProperty(item, ValueProperty);
+
+                if (!IsItemSelectedByValue(value))
+                {
+                    selectedItems.Add(item);
+                }
+                else
+                {
+                    selectedItems = selectedItems.AsQueryable().Where($@"!object.Equals({ValueProperty},@0)", value).ToList();
+                }
             }
             else
             {
-                selectedItems.Remove(item);
+                if (!selectedItems.Any(i => object.Equals(i, item)))
+                {
+                    selectedItems.Add(item);
+                }
+                else
+                {
+                    selectedItems = selectedItems.Where(i => !object.Equals(i, item)).ToList();
+                }
             }
         }
 
@@ -1117,7 +1124,7 @@ namespace Radzen
                     {
                         if (typeof(EnumerableQuery).IsAssignableFrom(View.GetType()))
                         {
-                            SelectedItem = View.OfType<object>().Where(i => object.Equals(PropertyAccess.GetValue(i, ValueProperty), value)).FirstOrDefault();
+                            SelectedItem = View.OfType<object>().Where(i => object.Equals(GetItemOrValueFromProperty(i, ValueProperty), value)).FirstOrDefault();
                         }
                         else
                         {
@@ -1146,14 +1153,14 @@ namespace Radzen
 
                                 if (typeof(EnumerableQuery).IsAssignableFrom(View.GetType()))
                                 {
-                                    item = View.OfType<object>().Where(i => object.Equals(PropertyAccess.GetValue(i, ValueProperty), v)).FirstOrDefault();
+                                    item = View.OfType<object>().Where(i => object.Equals(GetItemOrValueFromProperty(i, ValueProperty), v)).FirstOrDefault();
                                 }
                                 else
                                 {
                                     item = View.AsQueryable().Where($@"{ValueProperty} == @0", v).FirstOrDefault();
                                 }
 
-                                if (!object.Equals(item, null) && (LoadData.HasDelegate ? !IsItemSelectedByValue(v) : selectedItems.IndexOf(item) == -1))
+                                if (!object.Equals(item, null) && !selectedItems.AsQueryable().Where($@"object.Equals({ValueProperty},@0)", v).Any())
                                 {
                                     selectedItems.Add(item);
                                 }
@@ -1175,8 +1182,17 @@ namespace Radzen
 
         internal bool IsItemSelectedByValue(object v)
         {
-            return ((Multiple ? selectedItems : selectedItem != null ? new[] { selectedItem } : Enumerable.Empty<object>()) ?? Enumerable.Empty<object>())
-                .AsQueryable().Where($@"object.Equals({ValueProperty},@0)", v).Any();
+            switch (internalValue)
+            {
+                case string s:
+                    return object.Equals(s, v);
+                case IEnumerable enumerable:
+                    return enumerable.Cast<object>().Contains(v);
+                case null:
+                    return false;
+                default:
+                    return object.Equals(internalValue, v);
+            }
         }
 
         /// <inheritdoc />

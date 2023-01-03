@@ -7,7 +7,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Linq.Dynamic.Core.Parser;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -78,8 +81,14 @@ namespace Radzen
         /// SecondFilterOperator.
         /// </summary>
         public FilterOperator SecondFilterOperator { get; set; }
-    }
 
+        /// <summary>
+        /// LogicalFilterOperator.
+        /// </summary>
+        public LogicalFilterOperator LogicalFilterOperator { get; set; }
+    }
+#if NET7_0_OR_GREATER
+#else
     /// <summary>
     /// Enables "onmouseenter" and "onmouseleave" event support in Blazor. Not for public use.
     /// </summary>
@@ -88,7 +97,7 @@ namespace Radzen
     public static class EventHandlers
     {
     }
-
+#endif
     /// <summary>
     /// Represents the common <see cref="RadzenSelectBar{TValue}" /> API used by
     /// its items. Injected as a cascading property in <see cref="RadzenSelectBarItem" />.
@@ -663,6 +672,33 @@ namespace Radzen
         /// The user can select multiple rows.
         /// </summary>
         Multiple
+    }
+
+    /// <summary>
+    /// Specifies the grid lines of <see cref="RadzenDataGrid{TItem}" />.
+    /// </summary>
+    public enum DataGridGridLines
+    {
+        /// <summary>
+        /// Theme default.
+        /// </summary>
+        Default,
+        /// <summary>
+        /// Both horizontal and vertical grid lines.
+        /// </summary>
+        Both,
+        /// <summary>
+        /// No grid lines.
+        /// </summary>
+        None,
+        /// <summary>
+        /// Horizontal grid lines.
+        /// </summary>
+        Horizontal,
+        /// <summary>
+        /// Vertical grid lines.
+        /// </summary>
+        Vertical
     }
 
     /// <summary>
@@ -1939,28 +1975,61 @@ namespace Radzen
         /// <returns>A function which return the specified property by its name.</returns>
         public static Func<TItem, TValue> Getter<TItem, TValue>(string propertyName, Type type = null)
         {
-            var arg = Expression.Parameter(typeof(TItem));
-
-            Expression body = arg;
-
-            if (type != null)
+            if (propertyName.Contains("["))
             {
-                body = Expression.Convert(body, type);
+                return DynamicExpressionParser.ParseLambda<TItem, TValue>(null, false, propertyName).Compile();
             }
-
-            foreach (var member in propertyName.Split("."))
+            else
             {
-                body = !body.Type.IsInterface ? 
-                    Expression.PropertyOrField(body, member) :
-                        Expression.Property(
-                            body,
-                            new Type[] { body.Type }.Concat(body.Type.GetInterfaces()).FirstOrDefault(t => t.GetProperty(member) != null),
-                            member);
+                var arg = Expression.Parameter(typeof(TItem));
+
+                Expression body = arg;
+
+                if (type != null)
+                {
+                    body = Expression.Convert(body, type);
+                }
+
+                foreach (var member in propertyName.Split("."))
+                {
+                    if (body.Type.IsInterface)
+                    {
+                        body = Expression.Property(body,
+                            new [] { body.Type }.Concat(body.Type.GetInterfaces()).FirstOrDefault(t => t.GetProperty(member) != null),
+                            member
+                        );
+                    }
+                    else
+                    {
+                        try
+                        {
+                            body = Expression.PropertyOrField(body, member);
+                        }
+                        catch (AmbiguousMatchException)
+                        {
+                            var property = body.Type.GetProperty(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+
+                            if (property != null)
+                            {
+                                body = Expression.Property(body, property);
+                            }
+                            else
+                            {
+                                var field = body.Type.GetField(member, BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+
+                                if (field != null)
+                                {
+                                    body = Expression.Field(body, field);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                body = Expression.Convert(body, typeof(TValue));
+
+                return Expression.Lambda<Func<TItem, TValue>>(body, arg).Compile();
             }
-
-            body = Expression.Convert(body, typeof(TValue));
-
-            return Expression.Lambda<Func<TItem, TValue>>(body, arg).Compile();
         }
 
         /// <summary>
@@ -2210,7 +2279,10 @@ namespace Radzen
             {
                 return !type.IsInterface ?
                     type.GetProperty(property)?.PropertyType :
-                        new Type[] { type }.Concat(type.GetInterfaces()).FirstOrDefault(t => t.GetProperty(property) != null);
+                        new Type[] { type }
+                        .Concat(type.GetInterfaces())
+                        .FirstOrDefault(t => t.GetProperty(property) != null)?
+                        .GetProperty(property)?.PropertyType;
             }
 
             return null;

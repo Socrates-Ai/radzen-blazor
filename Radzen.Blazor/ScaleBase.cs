@@ -87,6 +87,8 @@ namespace Radzen.Blazor
         /// <param name="round">Wether to round.</param>
         public double NiceNumber(double range, bool round)
         {
+            var sign = Math.Sign(range);
+            range = Math.Abs(range);
             var exponent = Math.Floor(Math.Log10(range));
             var fraction = range / Math.Pow(10, exponent);
 
@@ -107,7 +109,7 @@ namespace Radzen.Blazor
                 else niceFraction = 10;
             }
 
-            return niceFraction * Math.Pow(10, exponent);
+            return sign * niceFraction * Math.Pow(10, exponent);
         }
 
         /// <summary>

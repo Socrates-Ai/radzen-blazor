@@ -447,6 +447,15 @@ namespace RadzenBlazorDemos
                 },
                 new Example()
                 {
+                    Name = "GridLines",
+                    New = true,
+                    Path = "datagrid-grid-lines",
+                    Title = "Blazor DataGrid grid lines",
+                    Icon = "&#xf016",
+                    Tags = new [] { "grid", "lines", "border", "gridlines" }
+                },
+                new Example()
+                {
                     Name = "Cell Context Menu",
                     Path = "datagrid-cell-contextmenu",
                     Title = "Blazor DataGrid cell context menu",
@@ -656,7 +665,16 @@ namespace RadzenBlazorDemos
                     Title = "Blazor Dialog component",
                     Path = "dialog",
                     Icon = "&#xe8a7",
-                    Tags = new [] { "popup", "window" }
+                    Tags = new [] { "popup", "window" },
+                    Updated = true
+                },
+                new Example()
+                {
+                    Name = "Layout",
+                    Title = "Blazor Layout component",
+                    Path = "layout",
+                    New = true,
+                    Icon = "&#xe8f1"
                 },
                 new Example()
                 {
@@ -789,11 +807,57 @@ namespace RadzenBlazorDemos
                 new Example()
                 {
                     Name = "DropDown",
-                    Title = "Blazor Dropdown component with multiple selection support",
-                    Path = "dropdown",
                     Icon = "&#xe875",
-                    Updated = true,
-                    Tags = new [] { "select", "picker", "form" , "edit" }
+                    Children = new [] {
+                        new Example()
+                        {
+                            Updated = true,
+                            Name = "Single selection",
+                            Path = "dropdown",
+                            Title = "Blazor DropDown component",
+                            Tags = new [] { "select", "picker", "form" , "edit", "dropdown" },
+                        },
+                        new Example()
+                        {
+                            Updated = true,
+                            Name = "Multiple selection",
+                            Path = "dropdown-multiple",
+                            Title = "Blazor DropDown component with multiple selection support",
+                            Tags = new [] { "select", "picker", "form" , "edit", "multiple", "dropdown" },
+                        },
+                        new Example()
+                        {
+                            Updated = true,
+                            Name = "Virtualization",
+                            Path = "dropdown-virtualization",
+                            Title = "Blazor DropDown component with virtualization",
+                            Tags = new [] { "select", "picker", "form" , "edit", "multiple", "dropdown", "virtualization", "paging" },
+                        },
+                        new Example()
+                        {
+                            Updated = true,
+                            Name = "Filtering",
+                            Path = "dropdown-filtering",
+                            Title = "Blazor DropDown component with filtering",
+                            Tags = new [] { "select", "picker", "form" , "edit", "multiple", "dropdown", "filter" },
+                        },
+                        new Example()
+                        {
+                            Updated = true,
+                            Name = "Grouping",
+                            Path = "dropdown-grouping",
+                            Title = "Blazor DropDown component with grouping",
+                            Tags = new [] { "select", "picker", "form" , "edit", "multiple", "dropdown", "grouping" },
+                        },
+                        new Example()
+                        {
+                            Updated = true,
+                            Name = "Custom objects binding",
+                            Path = "dropdown-custom-objects",
+                            Title = "Blazor DropDown component binding to custom objects",
+                            Tags = new [] { "select", "picker", "form" , "edit", "dropdown", "custom" },
+                        },
+                    }
                 },
                 new Example()
                 {
@@ -906,6 +970,14 @@ namespace RadzenBlazorDemos
                     Title = "Blazor slider component",
                     Icon = "&#xe260",
                     Tags = new [] { "form", "slider" }
+                },
+                new Example()
+                {
+                    Name = "SpeechToTextButton",
+                    New = true,
+                    Title = "Blazor speech to text button component",
+                    Path = "speechtotextbutton",
+                    Icon = "&#xe029"
                 },
                 new Example()
                 {
@@ -1023,6 +1095,14 @@ namespace RadzenBlazorDemos
                     Path = "chart-annotations",
                     Icon = "&#xe06f",
                     Tags = new [] { "chart", "annotation", "label" }
+                },
+                new Example
+                {
+                    Name = "Interpolation",
+                    Path = "chart-interpolation",
+                    Icon = "&#xe922",
+                    New = true,
+                    Tags = new [] { "chart", "interpolation", "spline", "step" }
                 },
                 new Example
                 {

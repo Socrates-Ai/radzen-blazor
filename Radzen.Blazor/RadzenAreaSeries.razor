@@ -11,16 +11,7 @@
 
     var value = ComposeValue(valueScale);
 
-    IPathGenerator pathGenerator;
-      
-    if (Smooth)
-    {
-      pathGenerator = new SplineGenerator();
-    }
-    else
-    {
-      pathGenerator = new LineGenerator();
-    }
+    var pathGenerator = GetPathGenerator();
 
     var data = Items.Select(item => 
     {

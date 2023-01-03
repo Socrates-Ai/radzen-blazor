@@ -421,7 +421,16 @@ namespace Radzen.Blazor
         {
             var value = propertyValueGetter != null && !string.IsNullOrEmpty(Property) && !Property.Contains('.') ? propertyValueGetter(item) : !string.IsNullOrEmpty(Property) ? PropertyAccess.GetValue(item, Property) : "";
 
-            return !string.IsNullOrEmpty(FormatString) ? string.Format(FormatString, value, Grid?.Culture ?? CultureInfo.CurrentCulture) : Convert.ToString(value, Grid?.Culture ?? CultureInfo.CurrentCulture);
+            if ((PropertyAccess.IsEnum(FilterPropertyType) || PropertyAccess.IsNullableEnum(FilterPropertyType)) && value != null)
+            {
+                var enumValue = value as Enum;
+                if (enumValue != null) 
+                {
+                    value = EnumExtensions.GetDisplayDescription(enumValue);
+                }
+            }
+
+            return !string.IsNullOrEmpty(FormatString) ? string.Format(Grid?.Culture ?? CultureInfo.CurrentCulture, FormatString, value) : Convert.ToString(value, Grid?.Culture ?? CultureInfo.CurrentCulture);
         }
 
         internal object GetHeader()
@@ -660,6 +669,16 @@ namespace Radzen.Blazor
             if (parameters.DidParameterChange(nameof(SortOrder), SortOrder))
             {
                 sortOrder = new SortOrder?[] { parameters.GetValueOrDefault<SortOrder?>(nameof(SortOrder)) };
+
+                if (Grid != null)
+                {
+                    var descriptor = Grid.sorts.Where(d => d.Property == GetSortProperty()).FirstOrDefault();
+                    if (descriptor == null)
+                    {
+                        Grid.sorts.Add(new SortDescriptor() { Property = GetSortProperty(), SortOrder = sortOrder.FirstOrDefault() });
+                        Grid._view = null;
+                    }
+                }
             }
 
             if (parameters.DidParameterChange(nameof(FilterValue), FilterValue))

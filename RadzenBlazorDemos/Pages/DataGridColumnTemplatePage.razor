@@ -20,7 +20,7 @@
     data formatting and HTML embedding.
 </RadzenText>
 
-<RadzenExample Name="DataGrid" Source="DataGridColumnTemplate" Heading="false">
+<RadzenExample Name="DataGridColumnTemplate" Heading="false" Documentation="false">
 <RadzenDataGrid @ref="ordersGrid" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" 
             Data="@orders" TItem="Order">
     <Columns>
@@ -63,9 +63,9 @@
                new DialogOptions() { Width = "700px", Height = "520px" });
     }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
 
         orders = dbContext.Orders.Include("Customer").Include("Employee").ToList();
     }

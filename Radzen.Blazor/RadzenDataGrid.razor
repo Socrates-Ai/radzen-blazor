@@ -29,7 +29,7 @@
                         {
                             <div class="rz-group-header-item">
                                 <span class="rz-group-header-item-title">@gd.GetTitle()</span>
-                                <a href="javascript:void(0)" @onclick=@(args => RemoveGroup(gd)) role="button" class="rz-dialog-titlebar-icon rz-dialog-titlebar-close">
+                                <a href="javascript:void(0)" @onclick=@(async args => await RemoveGroupAsync(gd)) role="button" class="rz-dialog-titlebar-icon rz-dialog-titlebar-close">
                                     <span class="rzi rzi-times"></span>
                                 </a>
                             </div>
@@ -64,7 +64,7 @@
         }
 
     <div class="rz-data-grid-data">
-            <table class="rz-grid-table rz-grid-table-fixed @(AllowAlternatingRows ? "rz-grid-table-striped" : "") @(allColumns.Any(c => c.Parent != null) ? "rz-grid-table-composite" : "")">
+            <table class="rz-grid-table rz-grid-table-fixed @(AllowAlternatingRows ? "rz-grid-table-striped" : "") @(allColumns.Any(c => c.Parent != null) ? "rz-grid-table-composite" : "") @(getGridLinesCSSClass())">
             <colgroup>
                 @foreach(var g in Groups)
                 {
@@ -89,7 +89,7 @@
                             <span class="rz-column-title"></span>
                         </th>
                     }
-                    @if (Template != null && ShowExpandColumn)
+                    @if (Template != null && ShowExpandColumn && i == 0)
                     {
                         <th class="rz-col-icon rz-unselectable-text" scope="col" rowspan=@(deepestChildColumnLevel + 1)>
                             <span class="rz-column-title"></span>
@@ -112,7 +112,7 @@
                         var columnIndex = visibleColumns.IndexOf(column);
                         var sortableClass = AllowSorting && column.Sortable ? "rz-sortable-column" : "";
 
-                        <RadzenDataGridHeaderCell RowIndex="@i" Grid="@this" Column="@column" ColumnIndex="@columnIndex" CssClass="@($"rz-unselectable-text {sortableClass} {column.HeaderCssClass} {getFrozenColumnClass(column, visibleColumns)} {(column.Columns != null || column.Parent != null ? "rz-composite-cell" : "")} {getColumnAlignClass(column)}".Trim())" Attributes="@(cellAttr)" />
+                        <RadzenDataGridHeaderCell RowIndex="@i" Grid="@this" Column="@column" ColumnIndex="@columnIndex" CssClass="@($"rz-unselectable-text {sortableClass} {column.HeaderCssClass} {getFrozenColumnClass(column, visibleColumns)} {getCompositeCellCSSClass(column)} {getColumnAlignClass(column)}".Trim())" Attributes="@(cellAttr)" />
                     }
                 </tr>
                 }
@@ -133,7 +133,7 @@
                         }
                         @foreach (var column in visibleColumns)
                         {
-                            <th colspan="@column.GetColSpan()" class="@($"rz-unselectable-text {getFrozenColumnClass(column, visibleColumns)}")" scope="col" style="@column.GetStyle(true, true)">
+                            <th colspan="@column.GetColSpan()" class="@($"rz-unselectable-text {getFrozenColumnClass(column, visibleColumns)} {column.HeaderCssClass}")" scope="col" style="@column.GetStyle(true, true)">
                                 @if (AllowFiltering && column.Filterable && column.Columns == null && (!string.IsNullOrEmpty(column.GetFilterProperty()) || column.FilterTemplate != null))
                                 {
                                     <div class="rz-cell-filter">
@@ -233,7 +233,7 @@
 
                                                                             <RadzenDatePicker TValue="@object"
                                                                                       ShowTime="@column.ShowTimeForDateTimeFilter()" ShowTimeOkButton="false" Inline="true" DateFormat="@getFilterDateFormat(column)"
-                                                                                      Value="@column.GetFilterValue()" Change="@(args => column.SetFilterValue(args.Value))" />
+                                                                                      Value="@column.GetFilterValue()" Change="@(args => { column.SetFilterValue(args.Value); SaveSettings(); })" />
 
                                                                         </div>
                                                                         <div class="rz-date-filter-buttons">
@@ -302,7 +302,7 @@
             <tbody>
                 @if (Data != null)
                 {
-                    @if (!ShowEmptyMessage || Count > 0 || !AllowPaging && LoadData.HasDelegate && Count == 0)
+                    @if (!ShowEmptyMessage || Count > 0 && (IsVirtualizationAllowed() ? Data.Any() : true) || !AllowPaging && LoadData.HasDelegate && Count == 0)
                     {
                         if (columns.Count > 0)
                         {
@@ -312,7 +312,7 @@
                     else
                     {
                         <tr class=" rz-datatable-emptymessage-row">
-                            <td class="rz-datatable-emptymessage" colspan="@(visibleColumns.Count + (Template != null && ShowExpandColumn ? 1 : 0))">
+                            <td class="rz-datatable-emptymessage" colspan="@(visibleColumns.Sum(c => c.GetColSpan()) + (Template != null && ShowExpandColumn ? 1 : 0))">
                                 @if (EmptyTemplate != null)
                                 {
                                     @EmptyTemplate
@@ -338,7 +338,7 @@
                                 <span class="rz-column-title"></span>
                             </td>
                         }
-                        @if (Template != null && ShowExpandColumn)
+                        @if (Template != null && ShowExpandColumn && i == 0)
                         {
                             <td class="rz-col-icon rz-unselectable-text" scope="col" rowspan=@(deepestChildColumnLevel + 1)>
                                 <span class="rz-column-title"></span>
@@ -358,7 +358,7 @@
                             }
 
                             <RadzenDataGridFooterCell RowIndex="@i" Grid="@this" Column="@column" 
-                                CssClass="@($"{column.FooterCssClass} {getFrozenColumnClass(column, visibleColumns)} {(column.Columns != null || column.Parent != null ? "rz-composite-cell" : "")}".Trim())" 
+                                CssClass="@($"{column.FooterCssClass} {getFrozenColumnClass(column, visibleColumns)} {getCompositeCellCSSClass(column)}".Trim())" 
                                 Attributes="@(cellAttr)" />
                         }
                     </tr>

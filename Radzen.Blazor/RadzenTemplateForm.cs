@@ -250,9 +250,9 @@ namespace Radzen.Blazor
         {
             if (Visible)
             {
-                if (Data != null)
+                if (EditContext != null)
                 {
-                    builder.OpenRegion(Data.GetHashCode());
+                    builder.OpenRegion(EditContext.GetHashCode());
                 }
 
                 builder.OpenElement(0, "form");
@@ -286,7 +286,7 @@ namespace Radzen.Blazor
 
                 builder.CloseElement(); // form
 
-                if (Data != null)
+                if (EditContext != null)
                 {
                     builder.CloseRegion();
                 }

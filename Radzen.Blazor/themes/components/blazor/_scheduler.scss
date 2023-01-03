@@ -266,12 +266,12 @@ $scheduler-day-number-padding: 0 0.5rem !default;
 
 .rz-slots {
   flex: 1;
-  font-size: var(--rz-root-font-size);
+  font-size: 1rem;
 }
 
 .rz-week {
   flex: 1;
-  font-size: var(--rz-root-font-size);
+  font-size: 1rem;
 
   .rz-slots {
     display: flex;

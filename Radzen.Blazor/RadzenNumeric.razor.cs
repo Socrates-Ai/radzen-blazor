@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Radzen.Blazor.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -220,6 +219,12 @@ namespace Radzen.Blazor
             {
                 valueStr = value.ToString();
             }
+
+            if (!string.IsNullOrEmpty(Format))
+            {
+                valueStr = valueStr.Replace(Format.Replace("#", "").Trim(), "");
+            }
+
             return new string(valueStr.Where(c => char.IsDigit(c) || char.IsPunctuation(c)).ToArray()).Replace("%", "");
         }
 

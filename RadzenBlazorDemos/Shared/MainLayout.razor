@@ -1,12 +1,10 @@
-﻿@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Components
 @using Radzen.Blazor
 @inherits LayoutComponentBase
 @inject ThemeService ThemeService
 @inject ExampleService ExampleService
 @inject NavigationManager UriHelper
 @inject IJSRuntime JSRuntime
-@inject IHttpContextAccessor httpContextAccessor
 
 <RadzenDialog />
 <RadzenNotification />
@@ -75,12 +73,12 @@
                         <RadzenCard class="mt-5 content-footer">
                             <div class="row align-items-center">
                                 <div class="col-12 col-lg-7 px-5 py-3 text-center text-lg-start">
-                                    <RadzenText TextStyle="TextStyle.H4" class="mb-3">Boost your Blazor development with <br /> Radzen Studio</RadzenText>
-                                    <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-text-secondary-color">Radzen Studio is a desktop tool that gives you the power to create line of business applications. Build and launch Blazor apps visually, while we generate clean code for you.</RadzenText>
+                                    <RadzenText TextStyle="TextStyle.H4" class="mb-3">Introducing <strong>Radzen Blazor Studio</strong></RadzenText>
+                                    <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-text-secondary-color">Radzen Blazor Studio is a desktop tool that empowers <strong>developers</strong> to create beautiful business Blazor apps. Develop your <strong>Blazor Server</strong> and <strong>WebAssembly</strong> applications visually with familiar <strong>WYSIWYG</strong> interface.</RadzenText>
                                 </div>
                                 <div class="col-12 col-lg-5 px-5 text-center text-lg-end">
-                                    <NavLink class="rz-button rz-button-lg rz-light ms-0 my-2 rz-text-align-center" href="https://www.radzen.com/features/" target="_blank">Learn More</NavLink>
-                                    <NavLink class="rz-button rz-button-lg rz-secondary ms-3 my-2 rz-text-align-center" href="https://www.radzen.com/download/" target="_blank">Download Radzen</NavLink>
+                                    <NavLink class="rz-button rz-button-lg rz-light ms-0 my-2 rz-text-align-center" href="https://www.radzen.com/blazor-studio/" target="_blank">Learn More</NavLink>
+                                    <NavLink class="rz-button rz-button-lg rz-secondary ms-3 my-2 rz-text-align-center" href="https://www.radzen.com/blazor-studio/download/" target="_blank">Download Now</NavLink>
                                 </div>
                             </div>
                         </RadzenCard>
@@ -103,7 +101,7 @@
         <RadzenTextBox Placeholder="Find component ..." type="search" @oninput="@FilterPanelMenu" style="width: 100%" />
     </div>
     <div style="flex: 1; overflow: auto">
-    <RadzenPanelMenu Match="NavLinkMatch.Prefix" Click="@PanelMenuClick">
+    <RadzenPanelMenu Match="NavLinkMatch.Prefix">
         @foreach (var category in examples)
         {
             <NavigationItem @bind-Expanded=@category.Expanded Example=@category>
@@ -132,21 +130,37 @@
     </div>
 </RadzenSidebar>
 </RadzenLayout>
+
+@if (!rendered)
+{
+<div class="rz-app-loading">
+    <div class="logo-loading"></div>
+</div>
+}
+
 @code {
     RadzenSidebar sidebar0;
     RadzenBody body0;
     bool sidebarExpanded = true;
     bool bodyExpanded = false;
+    bool rendered;
 
     IEnumerable<Example> examples;
     protected override void OnInitialized()
     {
-
         ThemeService.Initialize(UriHelper);
 
         examples = ExampleService.Examples;
 
         System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            rendered = true;
+        }
     }
 
     void FilterPanelMenu(ChangeEventArgs args)
@@ -161,13 +175,5 @@
         var url = UriHelper.GetUriWithQueryParameter("theme", $"{value}");
 
         UriHelper.NavigateTo(url, true);
-    }
-
-    async Task PanelMenuClick(MenuItemEventArgs args)
-    {
-        if (args.Path == "/")
-        {
-            await JSRuntime.InvokeVoidAsync("document.location.reload");
-        }
     }
 }
