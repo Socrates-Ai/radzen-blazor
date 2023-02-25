@@ -39,6 +39,7 @@ $scheduler-view-selected-border-color: $scheduler-view-selected-background-color
 
 $scheduler-header-background-color: var(--rz-base-200) !default;
 $scheduler-header-font-size: 0.75rem !default;
+$scheduler-header-font-size-small: 0.5rem !default;
 $scheduler-header-text-transform: uppercase !default;
 $scheduler-header-color: inherit !default;
 $scheduler-header-border: var(--rz-border-normal) !default;
@@ -55,9 +56,25 @@ $scheduler-event-list-button-color: var(--rz-secondary);
 $scheduler-event-list-button-font-size: 0.75rem;
 
 $scheduler-slot-title-font-size: 0.875rem !default;
+$scheduler-slot-title-font-size-small: 0.6rem !default;
 $scheduler-slot-title-padding: 0 0.25rem !default;
 
 $scheduler-day-number-padding: 0 0.5rem !default;
+
+$scheduler-weekend-color: var(--rz-text-disabled-color) !default;
+$scheduler-weekend-background-color: var(--rz-base-50) !default;
+$scheduler-other-month-background-color: var(--rz-base-100) !default;
+
+$scheduler-timeline-slot-width: 7rem !default;
+$scheduler-timeline-slot-height: 7rem !default;
+
+$scheduler-year-padding: 1.5rem !default;
+$scheduler-year-slot-padding: 1px !default;
+$scheduler-year-slot-title-width: 100% !default;
+$scheduler-year-slot-title-border-radius: 0.25rem !default;
+
+$scheduler-planner-slot-width: 3rem !default;
+$scheduler-planner-slot-height: 4.5rem !default;
 
 // Scheduler CSS variables
 
@@ -98,6 +115,7 @@ $scheduler-day-number-padding: 0 0.5rem !default;
   
   --rz-scheduler-header-background-color: #{$scheduler-header-background-color};
   --rz-scheduler-header-font-size: #{$scheduler-header-font-size};
+  --rz-scheduler-header-font-size-small: #{$scheduler-header-font-size-small};
   --rz-scheduler-header-text-transform: #{$scheduler-header-text-transform};
   --rz-scheduler-header-color: #{$scheduler-header-color};
   --rz-scheduler-header-border: #{$scheduler-header-border};
@@ -114,9 +132,25 @@ $scheduler-day-number-padding: 0 0.5rem !default;
   --rz-scheduler-event-list-button-font-size: #{$scheduler-event-list-button-font-size};
   
   --rz-scheduler-slot-title-font-size: #{$scheduler-slot-title-font-size};
+  --rz-scheduler-slot-title-font-size-small: #{$scheduler-slot-title-font-size-small};
   --rz-scheduler-slot-title-padding: #{$scheduler-slot-title-padding};
 
   --rz-scheduler-day-number-padding: #{$scheduler-day-number-padding};
+
+  --rz-scheduler-weekend-color: #{$scheduler-weekend-color};
+  --rz-scheduler-weekend-background-color: #{$scheduler-weekend-background-color};
+  --rz-scheduler-other-month-background-color: #{$scheduler-other-month-background-color};
+  
+  --rz-scheduler-timeline-slot-width: #{$scheduler-timeline-slot-width};
+  --rz-scheduler-timeline-slot-height: #{$scheduler-timeline-slot-height};
+  
+  --rz-scheduler-year-padding: #{$scheduler-year-padding};
+  --rz-scheduler-year-slot-padding: #{$scheduler-year-slot-padding};
+  --rz-scheduler-year-slot-title-width: #{$scheduler-year-slot-title-width};
+  --rz-scheduler-year-slot-title-border-radius: #{$scheduler-year-slot-title-border-radius};
+
+  --rz-scheduler-planner-slot-width: #{$scheduler-planner-slot-width};
+  --rz-scheduler-planner-slot-height: #{$scheduler-planner-slot-height};
 }
 
 .rz-scheduler {
@@ -152,6 +186,12 @@ $scheduler-day-number-padding: 0 0.5rem !default;
   border-left: 1px solid var(--rz-scheduler-border-color);
 }
 
+.rz-slot-title {
+  text-align: right;
+  font-size: var(--rz-scheduler-slot-title-font-size);
+  padding: var(--rz-scheduler-slot-title-padding);
+}
+
 .rz-slot-hours {
   .rz-slot-header {
     height: 1.5rem;
@@ -178,6 +218,7 @@ $scheduler-day-number-padding: 0 0.5rem !default;
 .rz-event {
   position: absolute;
   padding: var(--rz-scheduler-event-padding);
+  cursor: pointer;
 }
 
 .rz-event-content {
@@ -193,20 +234,6 @@ $scheduler-day-number-padding: 0 0.5rem !default;
 
 .rz-events {
   position: relative;
-}
-
-.rz-month-view {
-  .rz-view-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-}
-
-.rz-slot-title {
-  text-align: right;
-  font-size: var(--rz-scheduler-slot-title-font-size);
-  padding: var(--rz-scheduler-slot-title-padding);
 }
 
 .rz-scheduler-nav {
@@ -259,53 +286,9 @@ $scheduler-day-number-padding: 0 0.5rem !default;
   height: 0;
 }
 
-.rz-week-view-content {
-  flex: 1;
-  display: flex;
-}
-
 .rz-slots {
   flex: 1;
   font-size: 1rem;
-}
-
-.rz-week {
-  flex: 1;
-  font-size: 1rem;
-
-  .rz-slots {
-    display: flex;
-    height: 100%;
-  }
-
-  &:first-child .rz-slot {
-    border-top: none;
-  }
-}
-
-.rz-month-view {
-  .rz-slot {
-    flex: 1;
-    height: 100%;
-
-    &:first-child {
-      border-left: none;
-    }
-  }
-}
-
-.rz-day-view,
-.rz-week-view {
-  .rz-slot:nth-of-type(2) {
-    border-top: none;
-  }
-}
-
-.rz-week-view,
-.rz-day-view {
-  .rz-view-header {
-    padding-right: 15px;
-  }
 }
 
 .rz-scheduler-nav-views {
@@ -371,6 +354,260 @@ $scheduler-day-number-padding: 0 0.5rem !default;
   }
 }
 
+// Week range slots
+
+.rz-week {
+  flex: 1;
+  font-size: 1rem;
+
+  .rz-slots {
+    display: flex;
+    height: 100%;
+  }
+
+  &:first-child .rz-slot {
+    border-top: none;
+  }
+}
+
+// Month range slots
+.rz-month {
+  flex: 1;
+  font-size: 1rem;
+
+  .rz-slots {
+    display: flex;
+    height: 100%;
+  }
+
+  &:nth-child(2) .rz-slot {
+    border-top: none;
+  }
+
+  .rz-slot {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    border-top: 1px solid var(--rz-scheduler-border-color);
+    border-left: 1px solid var(--rz-scheduler-border-color);
+  
+    &:first-child {
+      position: sticky;
+      z-index: 9998;
+      left: 0;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--rz-scheduler-header-background-color);
+      border-left: none;
+      border-right: 1px solid var(--rz-scheduler-border-color);
+
+
+      .rz-slot-header {
+        text-align: center;
+        font-size: var(--rz-scheduler-header-font-size);
+        padding: var(--rz-scheduler-header-padding);
+        text-transform: var(--rz-scheduler-header-text-transform);
+        color: var(--rz-scheduler-header-color);
+      }
+    }
+
+    &:nth-child(2) {
+      border-left: none;
+    }
+  }
+}
+
+// Day View
+
+.rz-day-view{
+  .rz-slot:nth-of-type(2) {
+    border-top: none;
+  }
+
+  .rz-view-header {
+    padding-right: 15px;
+  }
+}
+
+// Week View
+
+.rz-week-view-content {
+  flex: 1;
+  display: flex;
+}
+
+.rz-week-view {
+  .rz-slot:nth-of-type(2) {
+    border-top: none;
+  }
+
+  .rz-view-header {
+    padding-right: 15px;
+  }
+}
+
+// Month View
+
+.rz-month-view {
+  .rz-view-content {
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .rz-slot {
+    flex: 1;
+    height: 100%;
+
+    &:first-child {
+      border-left: none;
+    }
+  }
+}
+
+// Planner View
+
+.rz-planner-view {
+  overflow: auto;
+
+  .rz-view-header {
+    position: sticky;
+    top: 0px;
+    min-height: 2.25rem;
+    z-index: 9999;
+  }
+
+  .rz-month {
+    .rz-slot {
+      &:first-child {
+        .rz-slot-header {
+          writing-mode: vertical-lr;
+          transform: rotate(-180deg);
+        }
+      }
+
+      &:last-child {
+        justify-content: center;
+        align-items: center;
+        background-color: var(--rz-scheduler-header-background-color);
+  
+        .rz-slot-header {
+          writing-mode: vertical-rl;
+          text-align: center;
+          font-size: var(--rz-scheduler-header-font-size);
+          padding: var(--rz-scheduler-header-padding);
+          text-transform: var(--rz-scheduler-header-text-transform);
+          color: var(--rz-scheduler-header-color);
+        }
+      }
+
+      &.rz-other-month {
+        background-color: var(--rz-scheduler-other-month-background-color);
+      }
+
+      &.rz-weekend {
+        color: var(--rz-scheduler-weekend-color);
+        background-color: var(--rz-scheduler-weekend-background-color);
+      }
+    }
+  }
+}
+
+// Timeline View
+
+.rz-timeline-view {
+  flex: auto;
+  overflow: auto;
+  flex-wrap: wrap;
+  flex-direction: unset;
+
+  .rz-view-header {
+    position: sticky;
+    top: 0px;
+    min-height: 36px;
+    z-index: 9999;
+
+    .rz-slot-header {
+      min-width: var(--rz-scheduler-timeline-slot-width);
+      flex: 0 0 auto;
+    }
+  }
+
+  .rz-month {
+    flex: 0 0 auto;
+  
+    .rz-slots {
+      flex: 0 0 auto;
+    }
+  
+    .rz-slot {
+      width: var(--rz-scheduler-timeline-slot-width);
+      height: var(--rz-scheduler-timeline-slot-height);
+
+      &.rz-other-month {
+        background-color: var(--rz-scheduler-other-month-background-color);
+      }
+
+      &.rz-weekend {
+        color: var(--rz-scheduler-weekend-color);
+        background-color: var(--rz-scheduler-weekend-background-color);
+      }
+    }
+  }
+}
+
+// Year View
+
+.rz-year-view {
+  overflow: auto;
+  padding: var(--rz-scheduler-year-padding);
+  --rz-gap: var(--rz-scheduler-year-padding);
+
+  .rz-flex-column,
+  .rz-week {
+    min-width: fit-content;
+  }
+
+  .rz-slot {
+    flex: 1;
+    border-top: none;
+    justify-content: center;
+    height: initial;
+    padding: var(--rz-scheduler-year-slot-padding);
+    cursor: pointer;
+
+    .rz-slot-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      text-align: center;
+      width: var(--rz-scheduler-year-slot-title-width);
+      min-width: 2rem;
+      min-height: 2rem;
+      border-radius: var(--rz-scheduler-year-slot-title-border-radius);
+      transition: var(--rz-datepicker-calendar-transition);
+
+      &.rz-other-month {
+        opacity: 0.5;
+      }
+
+      &.rz-has-appointments {
+        color: var(--rz-scheduler-event-color);
+        background-color: var(--rz-scheduler-event-background-color)
+      }
+    }
+
+    &:hover {
+      .rz-slot-title:not(.rz-has-appointments) {
+        color: var(--rz-datepicker-calendar-hover-color);
+        background: var(--rz-datepicker-calendar-hover-background-color);
+      }
+    }
+  }
+}
+
+// Responsive Styles
+
 @media (max-width: 576px) {
   .rz-scheduler-nav {
     .rz-scheduler-nav-prev-next {
@@ -407,6 +644,33 @@ $scheduler-day-number-padding: 0 0.5rem !default;
   .rz-slot-hours {
     .rz-slot-header {
       width: auto;
+    }
+  }
+}
+
+@media (max-width: 1399px) {
+  .rz-planner-view {
+    flex-wrap: wrap;
+    flex-direction: unset;
+
+    .rz-view-header {
+      .rz-slot-header {
+        flex: 0 0 auto;
+        width: var(--rz-scheduler-planner-slot-width);
+      }
+    }
+
+    .rz-month {
+      flex: 0 0 auto;
+
+      .rz-slots {
+        flex: 0 0 auto;
+      }
+
+      .rz-slot {
+        width: var(--rz-scheduler-planner-slot-width);
+        height: var(--rz-scheduler-planner-slot-height);
+      }
     }
   }
 }
