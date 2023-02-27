@@ -1,14 +1,58 @@
 @using System.Text.RegularExpressions;
 @inject IJSRuntime JSRuntime
+@inject CompilerService Compiler
 
-<pre style="min-height: 500px; overflow: auto; font-size: 12px" @ref="pre">@source</pre>
+<RadzenRow class="rz-p-2" Gap="0.5rem" Style="border-bottom: var(--rz-border-disabled);">
+    <RadzenColumn>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start" Gap="0.5rem">
+            <RadzenButton IsBusy=@isBusy Disabled=@isBusy Click="Run" Text="Run" Icon="play_circle_outline" Size="ButtonSize.ExtraSmall" Variant="Variant.Text" Title="Preview edits" class="rz-text-truncate" />
+            <button class="rz-button rz-button-xs rz-variant-text rz-primary rz-shade-default rz-text-truncate" Title="Copy source code" onclick=@Copy >
+                <RadzenIcon Icon="content_copy" />
+                Copy
+            </button>
+        </RadzenStack>
+    </RadzenColumn>
+    <RadzenColumn>
+    @if (String.IsNullOrEmpty(ComponentName)) 
+    {
 
+    }
+    else
+    {
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+            <a target="blank" class="rz-button rz-button-xs rz-variant-text rz-primary rz-shade-default rz-text-truncate rz-text-capitalize" href="@ComponentSourceHref" title=@($"View Radzen{ComponentName} component source code in new tab") >
+                <RadzenIcon Icon="open_in_new" /> @($"Radzen{ComponentName}") Source
+            </a>
+        </RadzenStack>
+    }
+    </RadzenColumn>
+</RadzenRow>
+<RadzenAlert Visible=@(error != null) AlertStyle="AlertStyle.Danger" Variant="Variant.Flat" Shade="Shade.Lighter">
+    @error
+</RadzenAlert>
+<Monaco @bind-Value="source" @ref="@monaco" Style="border: var(--rz-border-disabled)" Disabled=@isBusy />
 @code {
+    private string Copy => $"copy('{monaco?.Id}')";
+    private Monaco monaco;
     private ElementReference pre;
     private string source;
+    private string error;
+
+    [Parameter]
+    public EventCallback<Type> Compiled { get; set; }
 
     [Parameter]
     public string PageName { get; set; }
+
+    /* Source */
+    [Parameter]
+    public string ComponentSource { get; set; }
+
+    [Parameter]
+    public string ComponentName { get; set; }
+
+    string ComponentSourceHref => ComponentSource ?? $"https://github.com/radzenhq/radzen-blazor/blob/master/Radzen.Blazor/Radzen{ComponentName}.razor.cs";
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -18,11 +62,29 @@
         source = Regex.Replace(source, "</?RadzenExample[^>]*>\n", "");
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    bool isBusy;
+
+    private async Task Run()
     {
-        if (!String.IsNullOrEmpty(source))
+        try
         {
-            await JSRuntime.InvokeAsync<object>("hljs.highlightBlock", pre);
+            error = null;
+            isBusy = true;
+            await JSRuntime.InvokeVoidAsync("eval", $"instances['{monaco.Id}'].updateOptions({{domReadOnly: true, readOnly: true }})");
+
+            await Task.Yield();
+
+            var type = await Compiler.CompileAsync(source);
+
+            await Compiled.InvokeAsync(type);
+
         }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+
+        isBusy = false;
+        await JSRuntime.InvokeVoidAsync("eval", $"instances['{monaco.Id}'].updateOptions({{domReadOnly: false, readOnly: false }})");
     }
 }

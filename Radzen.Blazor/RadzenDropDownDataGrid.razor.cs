@@ -59,6 +59,11 @@ namespace Radzen.Blazor
         /// </summary>
         protected virtual void OnRowRender(RowRenderEventArgs<object> args)
         {
+            if (disabledPropertyGetter != null && disabledPropertyGetter(args.Data) as bool? == true)
+            {
+                args.Attributes.Add("class", "rz-data-row rz-state-disabled");
+            }
+
             if (RowRender != null)
             {
                 RowRender(args);
@@ -92,7 +97,11 @@ namespace Radzen.Blazor
                 return;
 
             await JSRuntime.InvokeVoidAsync(OpenOnFocus ? "Radzen.openPopup" : "Radzen.togglePopup", Element, PopupID, true);
-            await JSRuntime.InvokeVoidAsync("Radzen.focusElement", isFilter ? UniqueID : SearchID);
+
+            if (FocusFilterOnPopup)
+            {
+                await JSRuntime.InvokeVoidAsync("Radzen.focusElement", isFilter ? UniqueID : SearchID);
+            }
 
             if (list != null)
             {
@@ -240,6 +249,13 @@ namespace Radzen.Blazor
         public string SelectedItemsText { get; set; } = "items selected";
 
         /// <summary>
+        /// Gets or sets whether popup automatically focuses on filter input.
+        /// </summary>
+        /// <value><c>true</c> if filter input should auto focus when opened; otherwise, <c>false</c>.</value>
+        [Parameter]
+        public bool FocusFilterOnPopup { get; set; } = true;
+
+        /// <summary>
         /// Gets popup element reference.
         /// </summary>
         protected ElementReference popup;
@@ -327,14 +343,41 @@ namespace Radzen.Blazor
 
                     if (AllowFilteringByAllStringColumns)
                     {
-                        query = query.Where(string.Join(" || ", grid.ColumnsCollection.Where(c => c.Filterable && IsColumnFilterPropertyTypeString(c))
-                            .Select(c => GetPropertyFilterExpression(c.GetFilterProperty(), filterCaseSensitivityOperator))),
-                                FilterCaseSensitivity == FilterCaseSensitivity.CaseInsensitive ? searchText.ToLower() : searchText);
+                        if (AllowFilteringByWord)
+                        {
+                            string[] words = searchText.Split(' ');
+
+                            foreach (string word in words)
+                            {
+                                query = query.Where(string.Join(" || ", grid.ColumnsCollection.Where(c => c.Filterable && IsColumnFilterPropertyTypeString(c))
+                                    .Select(c => GetPropertyFilterExpression(c.GetFilterProperty(), filterCaseSensitivityOperator))),
+                                        FilterCaseSensitivity == FilterCaseSensitivity.CaseInsensitive ? word.ToLower() : word);
+                            }
+                        }
+                        else
+                        {
+                            query = query.Where(string.Join(" || ", grid.ColumnsCollection.Where(c => c.Filterable && IsColumnFilterPropertyTypeString(c))
+                                .Select(c => GetPropertyFilterExpression(c.GetFilterProperty(), filterCaseSensitivityOperator))),
+                                    FilterCaseSensitivity == FilterCaseSensitivity.CaseInsensitive ? searchText.ToLower() : searchText);                            
+                        }
                     }
                     else
                     {
-                        query = query.Where($"{GetPropertyFilterExpression(TextProperty, filterCaseSensitivityOperator)}",
-                            FilterCaseSensitivity == FilterCaseSensitivity.CaseInsensitive ? searchText.ToLower() : searchText);
+                        if (AllowFilteringByWord)
+                        {
+                            string[] words = searchText.Split(' ');
+
+                            foreach (string word in words)
+                            {
+                                query = query.Where($"{GetPropertyFilterExpression(TextProperty, filterCaseSensitivityOperator)}",
+                                    FilterCaseSensitivity == FilterCaseSensitivity.CaseInsensitive ? word.ToLower() : word);
+                            }
+                        }
+                        else
+                        {
+                            query = query.Where($"{GetPropertyFilterExpression(TextProperty, filterCaseSensitivityOperator)}",
+                                FilterCaseSensitivity == FilterCaseSensitivity.CaseInsensitive ? searchText.ToLower() : searchText);
+                        }
                     }
                 }
 
@@ -594,6 +637,13 @@ namespace Radzen.Blazor
         /// <value><c>true</c> if filtering by all string columns is allowed; otherwise, <c>false</c>.</value>
         [Parameter]
         public bool AllowFilteringByAllStringColumns { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether filtering by each entered word in the search term, sperated by a space, is allowed.
+        /// </summary>
+        /// <value><c>true</c> if filtering by individual words is allowed; otherwise, <c>false</c>.</value>
+        [Parameter]
+        public bool AllowFilteringByWord { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether DataGrid row can be selected on row click.

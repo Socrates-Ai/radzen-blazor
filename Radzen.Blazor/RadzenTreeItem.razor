@@ -1,5 +1,5 @@
 @implements IDisposable
-<li class="rz-treenode">
+<li class="rz-treenode" @attributes="Attributes">
     <div class=@ContentClassList @onclick="@Select">
         @if (ChildContent != null || HasChildren)
         {

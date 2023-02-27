@@ -17,6 +17,12 @@ namespace Radzen
     public class DropDownBase<T> : DataBoundFormComponent<T>
     {
 #if NET5_0_OR_GREATER
+        /// <summary>
+        /// Gets or sets a value that determines how many additional items will be rendered before and after the visible region. This help to reduce the frequency of rendering during scrolling. However, higher values mean that more elements will be present in the page.
+        /// </summary>
+        [Parameter]
+        public int VirtualizationOverscanCount { get; set; }
+
         internal Microsoft.AspNetCore.Components.Web.Virtualization.Virtualize<object> virtualize;
 
         /// <summary>
@@ -85,6 +91,15 @@ namespace Radzen
 #endif
         }
 
+        internal int GetVirtualizationOverscanCount()
+        {
+#if NET5_0_OR_GREATER
+            return VirtualizationOverscanCount;
+#else
+            return 0;
+#endif
+        }
+
         /// <summary>
         /// Renders the items.
         /// </summary>
@@ -105,6 +120,11 @@ namespace Radzen
                             RenderItem(b, context);
                         });
                     }));
+
+                    if(VirtualizationOverscanCount != default(int))
+                    {
+                        builder.AddAttribute(3, "OverscanCount", VirtualizationOverscanCount);
+                    }
 
                     builder.AddComponentReferenceCapture(7, c => { virtualize = (Microsoft.AspNetCore.Components.Web.Virtualization.Virtualize<object>)c; });
 
@@ -248,10 +268,10 @@ namespace Radzen
                 return;
             }
 
-            if (selectedItems.Count != View.Cast<object>().Count())
+            if (selectedItems.Count != View.Cast<object>().ToList().Where(i => disabledPropertyGetter != null ? disabledPropertyGetter(i) as bool? != true : true).Count())
             {
                 selectedItems.Clear();
-                selectedItems = View.Cast<object>().ToList();
+                selectedItems = View.Cast<object>().ToList().Where(i => disabledPropertyGetter != null ? disabledPropertyGetter(i) as bool? != true : true).ToList();
             }
             else
             {
@@ -292,10 +312,13 @@ namespace Radzen
         {
             if (LoadData.HasDelegate && !string.IsNullOrEmpty(ValueProperty))
             {
-                return View != null && View.Cast<object>().All(i => IsItemSelectedByValue(GetItemOrValueFromProperty(i, ValueProperty)));
+                return View != null && View.Cast<object>().ToList()
+                    .Where(i => disabledPropertyGetter != null ? disabledPropertyGetter(i) as bool? != true : true)
+                    .All(i => IsItemSelectedByValue(GetItemOrValueFromProperty(i, ValueProperty)));
             }
 
-            return View != null && selectedItems.Count == View.Cast<object>().Count();
+            return View != null && selectedItems.Count == View.Cast<object>().ToList()
+                    .Where(i => disabledPropertyGetter != null ? disabledPropertyGetter(i) as bool? != true : true).Count();
         }
 
         /// <summary>
@@ -1094,7 +1117,7 @@ namespace Radzen
                 }
                 else
                 {
-                    selectedItems = selectedItems.AsQueryable().Where($@"!object.Equals({ValueProperty},@0)", value).ToList();
+                    selectedItems = selectedItems.AsQueryable().Where($@"!object.Equals(it.{ValueProperty},@0)", value).ToList();
                 }
             }
             else
@@ -1160,7 +1183,7 @@ namespace Radzen
                                     item = View.AsQueryable().Where($@"{ValueProperty} == @0", v).FirstOrDefault();
                                 }
 
-                                if (!object.Equals(item, null) && !selectedItems.AsQueryable().Where($@"object.Equals({ValueProperty},@0)", v).Any())
+                                if (!object.Equals(item, null) && !selectedItems.AsQueryable().Where($@"object.Equals(it.{ValueProperty},@0)", v).Any())
                                 {
                                     selectedItems.Add(item);
                                 }

@@ -13,6 +13,9 @@ namespace Radzen.Blazor
     /// </summary>
     public partial class RadzenTreeItem : IDisposable
     {
+        [Parameter(CaptureUnmatchedValues = true)]
+        public IReadOnlyDictionary<string, object> Attributes { get; set; }
+
         ClassList ContentClassList => ClassList.Create("rz-treenode-content")
             .Add("rz-treenode-content-selected", selected);
 
