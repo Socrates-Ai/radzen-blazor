@@ -253,6 +253,8 @@ namespace Radzen
                 CloseDialogOnOverlayClick = options != null ? options.CloseDialogOnOverlayClick : false,
                 CloseDialogOnEsc = options != null ? options.CloseDialogOnEsc : true,
                 CssClass = options != null ? options.CssClass : "",
+                WrapperCssClass = options != null ? options.WrapperCssClass : "",
+                CloseTabIndex = options != null ? options.CloseTabIndex : 0,
             });
         }
 
@@ -295,7 +297,7 @@ namespace Radzen
         /// <param name="title">The text displayed in the title bar of the dialog.</param>
         /// <param name="options">The options.</param>
         /// <returns><c>true</c> if the user clicked the OK button, <c>false</c> otherwise.</returns>
-        public async Task<bool?> Confirm(string message = "Confirm?", string title = "Confirm", ConfirmOptions options = null)
+        public virtual async Task<bool?> Confirm(string message = "Confirm?", string title = "Confirm", ConfirmOptions options = null)
         {
             var dialogOptions = new DialogOptions()
             {
@@ -314,6 +316,8 @@ namespace Radzen
                 CloseDialogOnOverlayClick = options != null ? options.CloseDialogOnOverlayClick : false,
                 CloseDialogOnEsc = options != null ? options.CloseDialogOnEsc : true,
                 CssClass = options != null ? $"rz-dialog-confirm {options.CssClass}" : "rz-dialog-confirm",
+                WrapperCssClass = options != null ? $"rz-dialog-wrapper {options.WrapperCssClass}" : "rz-dialog-wrapper",
+                CloseTabIndex = options != null ? options.CloseTabIndex : 0,
             };
 
             return await OpenAsync(title, ds =>
@@ -353,7 +357,7 @@ namespace Radzen
         /// <param name="title">The text displayed in the title bar of the dialog.</param>
         /// <param name="options">The options.</param>
         /// <returns><c>true</c> if the user clicked the OK button, <c>false</c> otherwise.</returns>
-        public async Task<bool?> Alert(string message = "", string title = "Message", AlertOptions options = null)
+        public virtual async Task<bool?> Alert(string message = "", string title = "Message", AlertOptions options = null)
         {
             var dialogOptions = new DialogOptions()
             {
@@ -372,6 +376,8 @@ namespace Radzen
                 CloseDialogOnOverlayClick = options != null ? options.CloseDialogOnOverlayClick : false,
                 CloseDialogOnEsc = options != null ? options.CloseDialogOnEsc : true,
                 CssClass = options != null ? $"rz-dialog-alert {options.CssClass}" : "rz-dialog-alert",
+                WrapperCssClass = options != null ? $"rz-dialog-wrapper {options.WrapperCssClass}" : "rz-dialog-wrapper",
+                CloseTabIndex = options != null ? options.CloseTabIndex : 0,
             };
 
             return await OpenAsync(title, ds =>
@@ -441,6 +447,16 @@ namespace Radzen
         /// Gets or sets dialog box custom class
         /// </summary>
         public string CssClass { get; set; }
+
+        /// <summary>
+        /// Gets or sets the CSS classes added to the dialog's wrapper element.
+        /// </summary>
+        public string WrapperCssClass { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value the dialog escape tabindex. Set to <c>0</c> by default.
+        /// </summary>
+        public int CloseTabIndex { get; set; } = 0;
     }
 
     /// <summary>

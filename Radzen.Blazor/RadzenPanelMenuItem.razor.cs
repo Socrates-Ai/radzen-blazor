@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Components.Web;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +52,13 @@ namespace Radzen.Blazor
         /// <value>The path.</value>
         [Parameter]
         public string Path { get; set; }
+
+        /// <summary>
+        /// Gets or sets the navigation link match.
+        /// </summary>
+        /// <value>The navigation link match.</value>
+        [Parameter]
+        public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
 
         /// <summary>
         /// Gets or sets the icon.
@@ -141,6 +149,13 @@ namespace Radzen.Blazor
         }
 
         RadzenPanelMenu _parent;
+        
+        /// <summary>
+        /// Gets or sets the click callback.
+        /// </summary>
+        /// <value>The click callback.</value>
+        [Parameter]
+        public EventCallback<MenuItemEventArgs> Click { get; set; }
 
         /// <summary>
         /// Gets or sets the parent.
@@ -240,15 +255,39 @@ namespace Radzen.Blazor
 
             await base.SetParametersAsync(parameters);
         }
+        
         /// <summary>
         /// Handles the <see cref="E:Click" /> event.
         /// </summary>
         /// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        public async System.Threading.Tasks.Task OnClick(MouseEventArgs args)
+        public async Task OnClick(MouseEventArgs args)
         {
             if (Parent != null)
             {
-                await Parent.Click.InvokeAsync(new MenuItemEventArgs() { Text = this.Text, Path = this.Path, Value = this.Value });
+                var eventArgs = new MenuItemEventArgs
+                {
+                    Text = Text,
+                    Path = Path,
+                    Value = Value,
+                    AltKey = args.AltKey,
+                    Button = args.Button,
+                    Buttons = args.Buttons,
+                    ClientX = args.ClientX,
+                    ClientY = args.ClientY,
+                    CtrlKey = args.CtrlKey,
+                    Detail = args.Detail,
+                    MetaKey = args.MetaKey,
+                    ScreenX = args.ScreenX,
+                    ScreenY = args.ScreenY,
+                    ShiftKey = args.ShiftKey,
+                    Type = args.Type,
+                };
+                await Parent.Click.InvokeAsync(eventArgs);
+
+                if (Click.HasDelegate)
+                {
+                    await Click.InvokeAsync(eventArgs);
+                }
             }
         }
     }

@@ -1,10 +1,11 @@
-﻿@using System.Linq.Dynamic.Core
+﻿@using System.Linq.Expressions
+@using System.Linq.Dynamic.Core
 @using Microsoft.JSInterop
 @using Microsoft.AspNetCore.Components.Forms
 @using Radzen;
-@inherits PagedDataBoundComponent<TItem>
-
+@using Radzen.Blazor.Rendering
 @typeparam TItem
+@inherits PagedDataBoundComponent<TItem>
 @if (Columns != null)
 {
     <CascadingValue Value=this>
@@ -18,7 +19,7 @@
 <div @ref="@Element" style="@Style" @attributes="Attributes" class="@GetCssClass()" id="@GetId()">
     @if (AllowPaging && (PagerPosition == PagerPosition.Top || PagerPosition == PagerPosition.TopAndBottom))
     {
-        <RadzenPager @ref="topPager" Count="@Count" PageSize="@PageSize" PageNumbersCount="@PageNumbersCount" PageChanged="@OnPageChanged" PageSizeChanged="@OnPageSizeChanged" PageSizeOptions="@PageSizeOptions" ShowPagingSummary="@ShowPagingSummary" />
+            <RadzenPager @ref="topPager" Count="@Count" PageSize="@PageSize" PageNumbersCount="@PageNumbersCount" PageChanged="@OnPageChanged" PageSizeChanged="@OnPageSizeChanged" PageSizeOptions="@PageSizeOptions" ShowPagingSummary="@ShowPagingSummary" Density="@Density" />
     }
     <div class="rz-datatable-scrollable-wrapper rz-helper-clearfix" style="">
         <div class="rz-datatable-scrollable-view">
@@ -44,7 +45,7 @@
                                         <span class="rz-column-title"></span>
                                     </th>
                                 }
-                                
+
                                 @foreach (var column in visibleColumns)
                                 {
                                     var sortableClass = AllowSorting && column.Sortable ? "rz-sortable-column" : "";
@@ -481,7 +482,7 @@
 
         @if (AllowPaging && (PagerPosition == PagerPosition.Bottom || PagerPosition == PagerPosition.TopAndBottom))
         {
-            <RadzenPager @ref="bottomPager" Count="@Count" PageSize="@PageSize" PageNumbersCount="@PageNumbersCount" PageChanged="@OnPageChanged" PageSizeChanged="@OnPageSizeChanged" PageSizeOptions="@PageSizeOptions" ShowPagingSummary="@ShowPagingSummary" class="rz-paginator-bottom" />
+            <RadzenPager @ref="bottomPager" Count="@Count" PageSize="@PageSize" PageNumbersCount="@PageNumbersCount" PageChanged="@OnPageChanged" PageSizeChanged="@OnPageSizeChanged" PageSizeOptions="@PageSizeOptions" ShowPagingSummary="@ShowPagingSummary" class="rz-paginator-bottom" Density="@Density" />
         }
     </div>
     }

@@ -1,46 +1,88 @@
+using System;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.JSInterop;
 using Radzen.Blazor.Rendering;
 
 namespace Radzen.Blazor
 {
+    /// <summary>
+    /// The display style of the text. It overrides the tag name and provides predefined styling.
+    /// </summary>
     public enum TextStyle
     {
+        /// <summary>Display as largest header.</summary>
         DisplayH1,
+        /// <summary>Display as second largest header.</summary>
         DisplayH2,
+        /// <summary>Display as third largest header.</summary>
         DisplayH3,
+        /// <summary>Display as fourth largest header.</summary>
         DisplayH4,
+        /// <summary>Display as fifth largest header.</summary>
         DisplayH5,
+        /// <summary>Display as sixth largest header.</summary>
         DisplayH6,
+        /// <summary>Display as H1 element.</summary>
         H1,
+        /// <summary>Display as H2 element.</summary>
         H2,
+        /// <summary>Display as H3 element.</summary>
         H3,
+        /// <summary>Display as H4 element.</summary>
         H4,
+        /// <summary>Display as H5 element.</summary>
         H5,
+        /// <summary>Display as H6 element.</summary>
         H6,
+        /// <summary>Display as subtitle.</summary>
         Subtitle1,
+        /// <summary>Display as a smaller subtitle.</summary>
         Subtitle2,
+        /// <summary>Display as a paragraph.</summary>
         Body1,
+        /// <summary>Display as a smaller paragraph.</summary>
         Body2,
+        /// <summary>Display as button text.</summary>
         Button,
+        /// <summary>Display as a caption.</summary>
         Caption,
+        /// <summary>Display as overline.</summary>
         Overline
     }
 
+    /// <summary>
+    /// The tag name of the element that will be rendered.
+    /// </summary>
+
     public enum TagName
     {
+        /// <summary>Use &lt;div&gt; to render the text.</summary>
         Div,
+        /// <summary>Use &lt;span&gt; to render the text.</summary>
         Span,
+        /// <summary>Use &lt;p&gt; to render the text.</summary>
         P,
-        H1, 
-        H2, 
-        H3, 
-        H4, 
-        H5, 
+        /// <summary>Use &lt;h1&gt; to render the text.</summary>
+        H1,
+        /// <summary>Use &lt;h2&gt; to render the text.</summary>
+        H2,
+        /// <summary>Use &lt;h3&gt; to render the text.</summary>
+        H3,
+        /// <summary>Use &lt;h4&gt; to render the text.</summary>
+        H4,
+        /// <summary>Use &lt;h5&gt; to render the text.</summary>
+        H5,
+        /// <summary>Use &lt;h6&gt; to render the text.</summary>
         H6,
+        /// <summary>Use &lt;a&gt; to render the text.</summary>
         A,
+        /// <summary>Use &lt;button&gt; to render the text.</summary>
         Button,
+        /// <summary>Use &lt;pre&gt; to render the text.</summary>
         Pre,
+        /// <summary>The tag name will be determined depending on the TextStyle.</summary>
         Auto
     }
     /// <summary>
@@ -55,6 +97,60 @@ namespace Radzen.Blazor
     /// </example>
     public class RadzenText : RadzenComponent
     {
+        class RadzenTextAnchor : ComponentBase, IDisposable
+        {
+            [Inject]
+            NavigationManager NavigationManager { get; set; }
+
+            [Inject]
+            IJSRuntime JSRuntime { get; set; }
+
+            [Parameter]
+            public string Path { get; set; }
+
+            private string GetAnchor()
+            {
+                var fragments = Path.Split('#');
+
+                return fragments.Length > 1 ? fragments[1] : fragments[0];
+            }
+
+            private ElementReference element;
+
+            protected override void OnInitialized()
+            {
+                NavigationManager.LocationChanged += OnLocationChanged;
+            }
+
+            void OnLocationChanged(object sender, LocationChangedEventArgs e)
+            {
+                if (e.Location.EndsWith(GetAnchor(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    JSRuntime.InvokeVoidAsync("Element.prototype.scrollIntoView.call", element);
+                }
+            }
+
+            protected override void BuildRenderTree(RenderTreeBuilder builder)
+            {
+                builder.OpenElement(1, "a");
+                builder.AddAttribute(2, "name", GetAnchor());
+                builder.AddAttribute(3, "href", Path);
+                builder.AddAttribute(4, "class", "rz-link");
+                builder.AddAttribute(5, "target", "_top"); // To support relative links without the Blazor router interfering
+                builder.AddElementReferenceCapture(6, capture => element = capture);
+                builder.OpenComponent<RadzenIcon>(7);
+                builder.AddAttribute(8, "Icon", "link");
+                builder.CloseComponent();
+
+                builder.CloseElement();
+            }
+
+            void IDisposable.Dispose()
+            {
+                NavigationManager.LocationChanged -= OnLocationChanged;
+            }
+        }
+
         /// <summary>
         /// The text that will be displayed.
         /// </summary>
@@ -84,6 +180,12 @@ namespace Radzen.Blazor
         /// </summary>
         [Parameter]
         public TagName TagName { get; set; } = TagName.Auto;
+
+        /// <summary>
+        /// Gets or sets the anchor name. If set an additional anchor will be rendered. Clicking on the anchor will scroll the page to the element with the same id.
+        /// </summary>
+        [Parameter]
+        public string Anchor { get; set; }
 
         /// <inheritdoc />
         protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -247,16 +349,24 @@ namespace Radzen.Blazor
                 builder.AddAttribute(1, "style", Style);
                 builder.AddMultipleAttributes(2, Attributes);
                 builder.AddAttribute(3, "class", classList.ToString());
+                builder.AddAttribute(4, "id", GetId());
 
                 if (!string.IsNullOrEmpty(Text))
                 {
-                    builder.AddContent(4, Text);
+                    builder.AddContent(5, Text);
                 }
                 else
                 {
-                    builder.AddContent(4, ChildContent);
+                    builder.AddContent(5, ChildContent);
                 }
-                builder.AddElementReferenceCapture(5, capture => Element = capture);
+
+                if (!string.IsNullOrEmpty(Anchor))
+                {
+                    builder.OpenComponent<RadzenTextAnchor>(6);
+                    builder.AddAttribute(7, nameof(RadzenTextAnchor.Path), Anchor);
+                    builder.CloseComponent();
+                }
+                builder.AddElementReferenceCapture(8, capture => Element = capture);
                 builder.CloseElement();
             }
         }

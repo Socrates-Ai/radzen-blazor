@@ -1,4 +1,7 @@
-﻿namespace Radzen.Blazor
+using Microsoft.AspNetCore.Components.Web;
+using System.Threading.Tasks;
+
+namespace Radzen.Blazor
 {
     /// <summary>
     /// RadzenSwitch component.
@@ -15,6 +18,8 @@
         {
             return GetClassList("rz-switch").Add("rz-switch-checked", Value).ToString();
         }
+
+        private string ValueAsString => Value.ToString().ToLower();
 
         /// <summary>
         /// Toggles this instance checked state.

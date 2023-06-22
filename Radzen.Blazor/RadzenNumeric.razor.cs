@@ -43,7 +43,8 @@ namespace Radzen.Blazor
             object minArg = Min;
             object maxArg = Max;
 
-            return Min != null || Max != null ? $@"Radzen.numericOnInput(event, {minArg ?? "null"}, {maxArg ?? "null"})" : "";
+            return !(typeof(TValue).IsGenericType && typeof(TValue).GetGenericTypeDefinition() == typeof(Nullable<>)) &&
+                (Min != null || Max != null) ? $@"Radzen.numericOnInput(event, {minArg ?? "null"}, {maxArg ?? "null"})" : "";
         }
 
         private string getOnPaste()
@@ -114,7 +115,7 @@ namespace Radzen.Blazor
                     if (Format != null)
                     {
                         decimal decimalValue = (decimal)Convert.ChangeType(Value, typeof(decimal));
-                        return decimalValue.ToString(Format);
+                        return decimalValue.ToString(Format, Culture);
                     }
                     return Value.ToString();
                 }
@@ -252,12 +253,25 @@ namespace Radzen.Blazor
             return new string(valueStr.Where(c => char.IsDigit(c) || char.IsPunctuation(c)).ToArray()).Replace("%", "");
         }
 
+        /// <summary>
+        /// Gets or sets the function which returns TValue from string.
+        /// </summary>
+        [Parameter]
+        public Func<string, TValue> ConvertValue { get; set; }
+
         private async System.Threading.Tasks.Task InternalValueChanged(object value)
         {
             TValue newValue;
             try
             {
-                BindConverter.TryConvertTo<TValue>(RemoveNonNumericCharacters(value), Culture, out newValue);
+                if (ConvertValue != null)
+                {
+                    newValue = ConvertValue($"{value}");
+                }
+                else
+                {
+                    BindConverter.TryConvertTo<TValue>(RemoveNonNumericCharacters(value), Culture, out newValue);
+                }
             }
             catch
             {

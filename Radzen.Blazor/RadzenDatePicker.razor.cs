@@ -30,35 +30,21 @@ namespace Radzen.Blazor
         {
             if (Disabled) return;
 
-            var currentHour = ((CurrentDate.Hour + 11) % 12) + 1;
-            int newHour = 0;
-
-            if (amPm == "pm")
-            {
-                amPm = "am";
-
-                newHour = currentHour + 12;
-
-                if (newHour > 23)
-                {
-                    newHour = 0;
-                }
-            }
-            else if (amPm == "am")
-            {
-                amPm = "pm";
-
-                newHour = currentHour - 12;
-
-                if (newHour < 1)
-                {
-                    newHour = currentHour;
-                }
-            }
+            var newHour = (CurrentDate.Hour + 12) % 24;
 
             var newValue = new DateTime(CurrentDate.Year, CurrentDate.Month, CurrentDate.Day, newHour, CurrentDate.Minute, CurrentDate.Second);
 
+            hour = newValue.Hour;
             await UpdateValueFromTime(newValue);
+        }
+
+        int GetHour24FormatFrom12Format(int hour12)
+        {
+            hour12 = Math.Max(Math.Min(hour12, 12), 1);
+
+            return CurrentDate.Hour < 12 ?
+                (hour12 == 12 ? 0 : hour12) // AM
+                : (hour12 == 12 ? 12 : hour12 + 12); // PM
         }
 
         int? hour;
@@ -66,25 +52,27 @@ namespace Radzen.Blazor
         void OnUpdateHourInput(ChangeEventArgs args)
         {
             var value = $"{args.Value}";
-            if (!string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value) || !int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int v))
             {
-                int outValue;
-                hour = int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out outValue) ? (int?)outValue : null;
+                hour = null;
+                return;
             }
-        }
 
+            hour = HourFormat == "12" ? GetHour24FormatFrom12Format(v) : Math.Max(Math.Min(v, 23), 0);
+        }
 
         int? minutes;
 
         void OnUpdateHourMinutes(ChangeEventArgs args)
         {
             var value = $"{args.Value}";
-            if (!string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value) || !int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int v))
             {
-                int outValue;
-                minutes = int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out outValue) ? (int?)outValue : null;
-
+                minutes = null;
+                return;
             }
+
+            minutes = Math.Max(Math.Min(v, 59), 0);
         }
 
         int? seconds;
@@ -92,11 +80,13 @@ namespace Radzen.Blazor
         void OnUpdateHourSeconds(ChangeEventArgs args)
         {
             var value = $"{args.Value}";
-            if (!string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value) || !int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out int v))
             {
-                int outValue;
-                seconds = int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out outValue) ? (int?)outValue : null;
+                seconds = null;
+                return;
             }
+
+            seconds = Math.Max(Math.Min(v, 59), 0);
         }
 
         async Task UpdateValueFromTime(DateTime newValue)
@@ -112,9 +102,10 @@ namespace Radzen.Blazor
                 await OnChange();
             }
         }
+
         async Task UpdateHour(int v)
         {
-            var newHour = HourFormat == "12" && CurrentDate.Hour > 12 ? v + 12 : v;
+            var newHour = HourFormat == "12" ? GetHour24FormatFrom12Format(v) : v;
             var newMinute = CurrentDate.Minute;
             var newSecond = CurrentDate.Second;
 
@@ -149,14 +140,18 @@ namespace Radzen.Blazor
 
         async Task OkClick()
         {
+            if (PopupRenderMode == PopupRenderMode.OnDemand && !Disabled && !ReadOnly && !Inline)
+            {
+                await popup.CloseAsync(Element);
+            }
+
             if (!Disabled)
             {
                 DateTime date = CurrentDate;
 
                 if (CurrentDate.Hour != hour && hour != null)
                 {
-                    var newHour = HourFormat == "12" && CurrentDate.Hour > 12 ? hour.Value + 12 : hour.Value;
-                    date = new DateTime(CurrentDate.Year, CurrentDate.Month, CurrentDate.Day, newHour > 23 || newHour < 0 ? 0 : newHour, CurrentDate.Minute, CurrentDate.Second);
+                    date = new DateTime(CurrentDate.Year, CurrentDate.Month, CurrentDate.Day, hour.Value, CurrentDate.Minute, CurrentDate.Second);
                 }
 
                 if (CurrentDate.Minute != minutes && minutes != null)
@@ -236,8 +231,6 @@ namespace Radzen.Blazor
         /// <value>The tab index.</value>
         [Parameter]
         public int TabIndex { get; set; } = 0;
-
-        string amPm = "am";
 
         /// <summary>
         /// Gets or sets the name of the form component.
@@ -415,27 +408,14 @@ namespace Radzen.Blazor
             }
         }
 
-        IList<string> _abbreviatedDayNames;
-
-        IList<string> AbbreviatedDayNames
+        IEnumerable<string> ShiftedAbbreviatedDayNames
         {
             get
             {
-                if (_abbreviatedDayNames == null)
+                for (int current = (int)Culture.DateTimeFormat.FirstDayOfWeek, to = current + 7; current < to; current++)
                 {
-                    _abbreviatedDayNames = new List<string>();
-
-                    for (int i = (int)Culture.DateTimeFormat.FirstDayOfWeek; i < 7; i++)
-                    {
-                        _abbreviatedDayNames.Add(Culture.DateTimeFormat.AbbreviatedDayNames[i]);
-                    }
-
-                    for (int i = 0; i < (int)Culture.DateTimeFormat.FirstDayOfWeek; i++)
-                    {
-                        _abbreviatedDayNames.Add(Culture.DateTimeFormat.AbbreviatedDayNames[i]);
-                    }
+                    yield return Culture.DateTimeFormat.AbbreviatedDayNames[current % 7];
                 }
-                return _abbreviatedDayNames;
             }
         }
 
@@ -513,7 +493,7 @@ namespace Radzen.Blazor
             var inputValue = await JSRuntime.InvokeAsync<string>("Radzen.getInputValue", input);
 
             var valid = DateTime.TryParseExact(inputValue, DateFormat, null, DateTimeStyles.None, out value);
-            var nullable = Nullable.GetUnderlyingType(typeof(TValue)) != null;
+            var nullable = Nullable.GetUnderlyingType(typeof(TValue)) != null || AllowClear;
 
             if (!valid)
             {
@@ -582,6 +562,11 @@ namespace Radzen.Blazor
 
             await Change.InvokeAsync(DateTimeValue);
             StateHasChanged();
+        }
+
+        private string ButtonClasses
+        {
+            get => $"rz-button-icon-left rzi rzi-{(TimeOnly ? "time" : "calendar")}";
         }
 
         /// <summary>
@@ -786,6 +771,11 @@ namespace Radzen.Blazor
         /// </summary>
         public void Close()
         {
+            if (PopupRenderMode == PopupRenderMode.OnDemand && !Disabled && !ReadOnly && !Inline)
+            {
+                InvokeAsync(() => popup.CloseAsync(Element));
+            }
+
             if (!Disabled)
             {
                 contentStyle = "display:none;";

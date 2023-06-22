@@ -9,6 +9,10 @@
   &:hover:not(.rz-state-disabled) {
     @extend %input-hover;
   }
+
+  &:focus-within:not(.rz-state-disabled) {
+    @extend %input-focus;
+  }
 }
 
 .rz-state-disabled.rz-autocomplete {
@@ -18,6 +22,7 @@
 .rz-autocomplete-input {
   padding: var(--rz-input-padding);
   background-color: transparent;
+  color: var(--rz-input-value-color);
   box-shadow: var(--rz-input-shadow);
   border: none;
   height: var(--rz-input-height);

@@ -1,7 +1,7 @@
 @import 'variables';
 @import 'mixins';
+$theme-dark: true;
 $base: true;
-$dark: true;
 
 // Legacy Theme Tokens
 
@@ -226,6 +226,9 @@ $sidebar-toggle-hover-color: var(--rz-secondary) !default;
 $sidebar-toggle-background-color: var(--rz-base-background-color) !default;
 $sidebar-toggle-color: var(--rz-text-color) !default;
 
+// Card
+$card-flat-background-color: var(--rz-base-700) !default;
+
 // ProfileMenu
 $profile-menu-border: var(--rz-border-base-900) !default;
 $profile-menu-toggle-button-color: var(--rz-text-color) !default;
@@ -337,6 +340,10 @@ $editor-separator-background-color: var(--rz-base-700) !default;
 // Splitter
 $splitter-bar-background-color: var(--rz-base-700) !default;
 $splitter-bar-hover-opacity: 0.8 !default;
+
+// FormField
+$form-field-filled-background-color: var(--rz-base-700) !default;
+$form-field-filled-hover-background-color: var(--rz-base-700) !default;
 
 @import 'fonts';
 @import 'components';

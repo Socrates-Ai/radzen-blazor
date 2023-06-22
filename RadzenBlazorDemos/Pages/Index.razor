@@ -41,6 +41,25 @@
         </RadzenStack>
       </RadzenColumn>
     </RadzenRow>
+    <RadzenRow Class="rz-pt-12 rz-my-10">
+      <RadzenColumn Size="12">
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="2rem" Wrap="FlexWrap.Wrap">
+          <a href="https://github.com/radzenhq/radzen-blazor/">
+            <img alt="Star Radzen on GitHub" src="https://img.shields.io/github/stars/radzenhq/radzen-blazor?color=ff504d&logo=github&style=for-the-badge" style="border-radius: 20px;" />
+          </a>
+          <a href="https://github.com/radzenhq/radzen-blazor/graphs/contributors">
+            <img alt="Github Contributors" src="https://img.shields.io/github/contributors/radzenhq/radzen-blazor?color=ff504d&logo=github&style=for-the-badge" style="border-radius: 20px;" />
+          </a>
+          <a href="https://www.nuget.org/packages/Radzen.Blazor">
+            <img alt="Nuget Downloads" src="https://img.shields.io/nuget/dt/Radzen.Blazor?color=ff504d&label=nuget%20downloads&logo=nuget&style=for-the-badge" style="border-radius: 20px;" />
+          </a>
+          <a href="https://github.com/radzenhq/radzen-blazor/blob/master/LICENSE">
+            <img alt="License - MIT" src="https://img.shields.io/github/license/radzenhq/radzen-blazor?color=ff504d&logo=github&style=for-the-badge" style="border-radius: 20px;" />
+          </a>
+          <img alt="Last Commit" src="https://img.shields.io/github/last-commit/radzenhq/radzen-blazor?color=ff504d&logo=github&style=for-the-badge" style="border-radius: 20px;" />
+        </RadzenStack>
+      </RadzenColumn>
+    </RadzenRow>
 
     <RadzenCard class="rz-mt-12 rz-p-12 rz-border-radius-3 rz-shadow-1 rz-background-color-white">
       <RadzenRow AlignItems="AlignItems.Center">
@@ -48,19 +67,20 @@
           <RadzenText TextStyle="TextStyle.Overline" TagName="TagName.H3" class="rz-color-base-700" style="font-size: 1rem">Trusted by:</RadzenText>
         </RadzenColumn>
         <RadzenColumn SizeSM="10" class="customers-logos">
-          <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceAround" Wrap="FlexWrap.Wrap" Gap="3rem">
+          <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceAround" Wrap="FlexWrap.Wrap" Gap="2.5rem">
           <img src="images/microsoft.svg" />
           <img src="images/porsche.svg" style="height: 70px;" />
           <img class="square" src="images/nasa.svg" />
           <img src="images/allianz.svg" />
           <img class="square" src="images/dell.svg" />
+          <img class="square" src="images/shell.svg" />
           <img src="images/accenture.svg" />
           <img src="images/eurobank.svg" />
           <img src="images/nokia.svg" style="height: 20px;" />
+          <img src="images/DHL.svg" />
           <img src="images/konica-minolta.svg" style="height: 40px;" />
           <img src="images/siemens.svg" style="height: 20px;" />
           <img src="images/deloitte.svg" style="height: 26px;" />
-          <img src="images/DHL.svg" />
           </RadzenStack>
         </RadzenColumn>
       </RadzenRow>
@@ -155,7 +175,7 @@
                 <ul>
                   <li><a href="/datagrid">DataGrid</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                   <li><a href="/datalist">DataList</a></li>
-                  <li><a href="/datafilter">DataFilter</a><RadzenBadge Text="New" BadgeStyle="BadgeStyle.Success" /></li>
+                  <li><a href="/datafilter">DataFilter</a></li>
                   <li><a href="/pager">Pager</a></li>
                   <li><a href="/scheduler">Scheduler</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                   <li><a href="/tree">Tree</a></li>
@@ -168,8 +188,8 @@
                   <li><a href="/borders">Borders</a></li>
                   <li><a href="/shadows">Shadows</a></li>
                   <li><a href="/ripple">Ripple</a></li>
-                  <li><a href="/breakpoints">Breakpoints</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
-                  <li><a href="/spacing">Spacing</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
+                  <li><a href="/breakpoints">Breakpoints</a></li>
+                  <li><a href="/spacing">Spacing</a></li>
                 </ul>
                 <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.H3" class="rz-mt-6">Images</RadzenText>
                 <ul>
@@ -180,10 +200,10 @@
               <RadzenColumn Size="12" SizeLG="6">
                 <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.H3" class="rz-mt-6">Layout</RadzenText>
                 <ul>
-                  <li><a href="/layout">Layout</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
-                  <li><a href="/stack">Stack</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
-                  <li><a href="/row">Row</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
-                  <li><a href="/column">Column</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
+                  <li><a href="/layout">Layout</a></li>
+                  <li><a href="/stack">Stack</a></li>
+                  <li><a href="/row">Row</a></li>
+                  <li><a href="/column">Column</a></li>
                   <li><a href="/card">Card</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
                   <li><a href="/dialog">Dialog</a></li>
                   <li><a href="/panel">Panel</a></li>
@@ -195,8 +215,8 @@
                   <li><a href="/breadcrumb">BreadCrumb</a></li>
                   <li><a href="/contextmenu">ContextMenu</a></li>
                   <li><a href="/link">Link</a></li>
-                  <li><a href="/login">Login</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
-                  <li><a href="/menu">Menu</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
+                  <li><a href="/login">Login</a></li>
+                  <li><a href="/menu">Menu</a></li>
                   <li><a href="/panelmenu">PanelMenu</a></li>
                   <li><a href="/profile-menu">ProfileMenu</a></li>
                   <li><a href="/steps">Steps</a></li>
@@ -211,15 +231,16 @@
               <RadzenColumn SizeLG="6">
                 <ul>
                   <li><a href="/autocomplete">AutoComplete</a></li>
-                  <li><a href="/button">Button</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
+                  <li><a href="/button">Button</a></li>
                   <li><a href="/checkbox">CheckBox</a></li>
                   <li><a href="/checkboxlist">CheckBoxList</a></li>
                   <li><a href="/colorpicker">ColorPicker</a></li>
                   <li><a href="/datepicker">DatePicker</a></li>
-                  <li><a href="/dropdown">DropDown</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
+                  <li><a href="/dropdown">DropDown</a></li>
                   <li><a href="/dropdown-datagrid">DropDownDataGrid</a></li>
                   <li><a href="/fieldset">Fieldset</a></li>
                   <li><a href="/fileinput">FileInput</a></li>
+                  <li><a href="/form-field">FormField</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
                   <li><a href="/html-editor">HTMLEditor</a></li>
                   <li><a href="/listbox">ListBox</a></li>
                   <li><a href="/mask">Mask</a></li>
@@ -231,10 +252,10 @@
                   <li><a href="/password">Password</a></li>
                   <li><a href="/radiobuttonlist">RadioButtonList</a></li>
                   <li><a href="/rating">Rating</a></li>
-                  <li><a href="/selectbar">SelectBar</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
+                  <li><a href="/selectbar">SelectBar</a></li>
                   <li><a href="/slider">Slider</a></li>
                   <li><a href="/speechtotextbutton">SpeechToTextButton</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
-                  <li><a href="/splitbutton">SplitButton</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
+                  <li><a href="/splitbutton">SplitButton</a></li>
                   <li><a href="/switch">Switch</a></li>
                   <li><a href="/templateform">TemplateForm</a></li>
                   <li><a href="/textarea">TextArea</a></li>
@@ -257,16 +278,18 @@
                   <li><a href="/pie-chart">Pie Chart</a></li>
                   <li><a href="/arc-gauge">Arc Gauge</a></li>
                   <li><a href="/radial-gauge">Radial Gauge</a></li>
+                  <li><a href="/stacked-bar-chart">Stacked Bar Chart</a></li>
+                  <li><a href="/stacked-column-chart">Stacked Column Chart</a></li>
                   <li><a href="/googlemap">GoogleMap</a></li>
                 </ul>
               </RadzenColumn>
               <RadzenColumn Size="12" SizeLG="6">
                 <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.H3" class="rz-mt-6">Feedback</RadzenText>
                 <ul>
-                  <li><a href="/alert">Alert</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
-                  <li><a href="/badge">Badge</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
+                  <li><a href="/alert">Alert</a></li>
+                  <li><a href="/badge">Badge</a></li>
                   <li><a href="/notification">Notification</a></li>
-                  <li><a href="/progressbar">ProgressBar</a><RadzenBadge Text="Updated" BadgeStyle="BadgeStyle.Info" Shade="Shade.Lighter" /></li>
+                  <li><a href="/progressbar">ProgressBar</a></li>
                   <li><a href="/tooltip">Tooltip</a></li>
                 </ul>
                 <RadzenText TextStyle="TextStyle.Subtitle1" TagName="TagName.H3" class="rz-mt-6" style="--rz-text-subtitle1-font-weight: 600;">Validators</RadzenText>
@@ -277,6 +300,7 @@
                   <li><a href="/numericrangevalidator">NumericRangeValidator</a></li>
                   <li><a href="/regexvalidator">RegexValidator</a></li>
                   <li><a href="/requiredvalidator">RequiredValidator</a></li>
+                  <li><a href="/customvalidator">CustomValidator</a><RadzenBadge BadgeStyle="BadgeStyle.Success" Text="New" /></li>
                 </ul>
               </RadzenColumn>
             </RadzenRow>
@@ -316,10 +340,10 @@
       <NavLink class="cta-button primary" href="https://www.radzen.com/blazor-studio/download/" target="_blank" title="Get Radzen Blazor Studio for Windows, Mac or Linux">Download Now</NavLink>
       <NavLink class="cta-button" href="https://www.radzen.com/blazor-studio/" target="_blank" title="Explore Radzen Blazor Studio features">Learn More</NavLink>
     </RadzenStack>
-    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Gap="3rem" class="copyright">
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" class="copyright">
       <a href="https://www.radzen.com" title="Create .NET Core web applications fast & easy" target="_blank"><img src="images/easier-than-you-think.svg" /></a>
-      <p>
-        Radzen Blazor Components, &copy; 2018-2023 Radzen.
+      <p class="rz-mt-12">
+        Radzen Blazor Components, &copy; 2018-2023 Radzen.<br />
         <a href="https://github.com/radzenhq/radzen-blazor" target="_blank">Source Code</a> licensed under
         <a href="https://github.com/radzenhq/radzen-blazor/blob/master/LICENSE" target="_blank">MIT</a>
       </p>

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.JSInterop;
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.JSInterop;
 
 namespace Radzen
 {
@@ -201,6 +202,13 @@ namespace Radzen
         public virtual bool AllowFiltering { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether filtering is allowed as you type. Set to <c>true</c> by default.
+        /// </summary>
+        /// <value><c>true</c> if filtering is allowed; otherwise, <c>false</c>.</value>
+        [Parameter]
+        public virtual bool FilterAsYouType { get; set; } = true;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the user can clear the value. Set to <c>false</c> by default.
         /// </summary>
         /// <value><c>true</c> if clearing is allowed; otherwise, <c>false</c>.</value>
@@ -250,6 +258,13 @@ namespace Radzen
         public Action<object> SelectedItemChanged { get; set; }
 
         /// <summary>
+        /// Gets or sets the search text changed.
+        /// </summary>
+        /// <value>The search text changed.</value>
+        [Parameter]
+        public Action<string> SearchTextChanged { get; set; }
+
+        /// <summary>
         /// The selected items
         /// </summary>
         protected IList<object> selectedItems = new List<object>();
@@ -292,6 +307,15 @@ namespace Radzen
             if (typeof(IList).IsAssignableFrom(typeof(T)))
             {
                 var list = (IList)Activator.CreateInstance(typeof(T));
+                foreach (var i in (IEnumerable)internalValue)
+                {
+                    list.Add(i);
+                }
+                await ValueChanged.InvokeAsync((T)(object)list);
+            }
+            else if (typeof(T).IsGenericType && typeof(ICollection<>).MakeGenericType(typeof(T).GetGenericArguments()[0]).IsAssignableFrom(typeof(T)))
+            {
+                var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(typeof(T).GetGenericArguments()[0]));
                 foreach (var i in (IEnumerable)internalValue)
                 {
                     list.Add(i);
@@ -656,7 +680,7 @@ namespace Radzen
                     Debounce(DebounceFilter, FilterDelay);
                 }
             }
-            else if (AllowFiltering && isFilter)
+            else if (AllowFiltering && isFilter && FilterAsYouType)
             {
                 Debounce(DebounceFilter, FilterDelay);
             }
@@ -717,6 +741,7 @@ namespace Radzen
                 selectedIndex = -1;
 
             await JSRuntime.InvokeAsync<string>("Radzen.repositionPopup", Element, PopupID);
+            SearchTextChanged?.Invoke(SearchText);
         }
 
         /// <summary>
@@ -843,7 +868,7 @@ namespace Radzen
 
             if (valueAsEnumerable != null)
             {
-                if (valueAsEnumerable.OfType<object>().Count() != selectedItems.Count)
+                if (valueAsEnumerable.Cast<object>().ToList().Count != selectedItems.Count)
                 {
                     selectedItems.Clear();
                 }
@@ -882,7 +907,7 @@ namespace Radzen
                 }
                 else
                 {
-                    return object.Equals(item,selectedItem);
+                    return object.Equals(item, selectedItem);
                 }
             }
         }
@@ -1085,6 +1110,22 @@ namespace Radzen
                         else
                         {
                             var list = (IList)Activator.CreateInstance(typeof(T));
+                            foreach (var i in (IEnumerable)internalValue)
+                            {
+                                list.Add(i);
+                            }
+                            await ValueChanged.InvokeAsync((T)(object)list);
+                        }
+                    }
+                    else if (typeof(T).IsGenericType && typeof(ICollection<>).MakeGenericType(typeof(T).GetGenericArguments()[0]).IsAssignableFrom(typeof(T)))
+                    {
+                        if (object.Equals(internalValue, null))
+                        {
+                            await ValueChanged.InvokeAsync(default(T));
+                        }
+                        else
+                        {
+                            var list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(typeof(T).GetGenericArguments()[0]));
                             foreach (var i in (IEnumerable)internalValue)
                             {
                                 list.Add(i);

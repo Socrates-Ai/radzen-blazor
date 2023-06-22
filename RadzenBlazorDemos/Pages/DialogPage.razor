@@ -7,6 +7,60 @@
     Demonstration and configuration of the Radzen Blazor Dialog component.
 </RadzenText>
 
-<RadzenExample ComponentName="Dialog" Example="DialogConfig" Source="https://github.com/radzenhq/radzen-blazor/blob/master/Radzen.Blazor/DialogService.cs" AdditionalSourceCodePages=@(new [] { "DialogCardPage.razor", "DialogSideContent.razor" })>
-    <DialogConfig />
+<HelpPrerequirements/>
+
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-pt-8">
+    Open page as a dialog
+</RadzenText>
+<RadzenExample ComponentName="Dialog" Example="DialogWithPage">
+    <DialogWithPage />
+</RadzenExample>
+
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-pt-8">
+    Inline Dialog
+</RadzenText>
+<RadzenExample ComponentName="Dialog" Example="DialogInline">
+    <DialogInline />
+</RadzenExample>
+
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-pt-8">
+    Busy Dialog
+</RadzenText>
+<RadzenExample ComponentName="Dialog" Example="DialogBusy">
+    <DialogBusy />
+</RadzenExample>
+
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-pt-8">
+    Confirm Dialog
+</RadzenText>
+<RadzenExample ComponentName="Dialog" Example="DialogConfirm">
+    <DialogConfirm />
+</RadzenExample>
+
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-pt-8">
+    Alert Dialog
+</RadzenText>
+<RadzenExample ComponentName="Dialog" Example="DialogAlert">
+    <DialogAlert />
+</RadzenExample>
+
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-pt-8">
+    Close Dialog by clicking outside
+</RadzenText>
+<RadzenExample ComponentName="Dialog" Example="DialogOverlayClose">
+    <DialogOverlayClose />
+</RadzenExample>
+
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-pt-8">
+    Side Dialog
+</RadzenText>
+<RadzenExample ComponentName="Dialog" Example="DialogSide">
+    <DialogSide />
+</RadzenExample>
+
+<RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-pt-8">
+    Dialog with custom CSS classes
+</RadzenText>
+<RadzenExample ComponentName="Dialog" Example="DialogCss">
+    <DialogCss />
 </RadzenExample>
